@@ -4,6 +4,8 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,7 +20,8 @@ public class LoginPage extends BasePage {
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
-    final String loginButtonXpath = "//*[@text='Prijava'] | //*[@text='Registriraj moj račun']";
+    final String loginButtonXpath = "(((((//*[@class='android.view.View' and ./parent::*[@class='android.view.View' and ./parent::*[@class='android.view.View' and ./parent::*[@id='content-wrapper']]]]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[1]/*[@class='android.view.View'])[3]/*[@class='android.view.View'])[4]";
+    //final String loginButtonXpath ="//*[@class='android.widget.Button' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text]]]";
     @FindBy(xpath=loginButtonXpath)
     MobileElement loginButton;
 
@@ -26,12 +29,16 @@ public class LoginPage extends BasePage {
     @FindBy(xpath=loginButtonRegisterXpath)
     MobileElement loginButtonRegister;
 
+    @FindBy(xpath = "//span[contains(text(),'1/3')]")
+    MobileElement incorrectPINText;
+
 
     //driver.findElement(By.xpath("//*[@text='Registriraj moj račun']"));
     @FindBy(xpath="//*[@text='Registriraj moj račun']")
     MobileElement registrationButton;
 
-    @FindBy(xpath="//*[@text='U REDU']")
+    //@FindBy(xpath="//*[@text='U REDU']")
+    @FindBy(xpath="//*[@class='android.widget.Button' and ./parent::*[@class='android.widget.LinearLayout']]")
     MobileElement okButton;
 
 
@@ -79,26 +86,14 @@ public class LoginPage extends BasePage {
     }
 
     public void pressLogin() throws InterruptedException {
-        boolean wait = fluentWaitforElement(loginButton,60,5);
+        boolean wait = fluentWaitforElement(loginButton,5,1);
         loginButton.click();
     }
 
     // Verify Wrong credentials
     public boolean verifyWrongCredentials() {
-        try {
-
-            wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(
-                            By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']")));
-            driver.findElement(By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']"));
-
-            return true;
-
-        } catch (NoSuchElementException e) {
-
-            return false;
-
-        }
+        boolean wait = fluentWaitforElement(incorrectPINText, 5, 1);
+        return wait;
     }
 
     public boolean isVisible(){

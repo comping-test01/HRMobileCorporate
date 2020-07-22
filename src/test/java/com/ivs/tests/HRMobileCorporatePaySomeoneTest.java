@@ -59,7 +59,7 @@ public class HRMobileCorporatePaySomeoneTest extends BaseTest {
         HomePage homePage = null;
 
         try {
-            loginPage.loginAndEnterPIN(masterPIN);
+            loginPage.loginAndEnterPIN(applicationPIN);
             homePage = new HomePage(driver);
 
             //homePage.skipSettingMainCompany();
@@ -135,7 +135,7 @@ public class HRMobileCorporatePaySomeoneTest extends BaseTest {
             switch (testType.toUpperCase()) {
                 case "AUTHORIZE&SEND":
                 case "FROM BENEFICIARY":
-                    paySomeonePage.doAuthorizeAndSend(masterPIN);
+                    paySomeonePage.doAuthorizeAndSend(applicationPIN);
                     strExpectedText = "NALOG USPJEŠNO POSLAN NA IZVRŠENJE. MOLIMO PROVJERITE STATUS U LISTI NALOGA.!";
                     strBrojAutorizacije = paySomeonePage.getAuthorizationID();
                     paySomeonePage.verifyPaymentResultMessage(strExpectedText);
@@ -146,7 +146,7 @@ public class HRMobileCorporatePaySomeoneTest extends BaseTest {
                 case "AUTHORIZE":
                     paySomeonePage.doAuthorize();
                     strExpectedText = "NALOG USPJEŠNO POSLAN I AUTORIZIRAN TE SE NALAZI U AUTORIZACIJI.!";
-                    loginPage.enterPIN(masterPIN);
+                    loginPage.enterPIN(applicationPIN);
                     paySomeonePage.verifyPaymentResultMessage(strExpectedText);
                     strBrojAutorizacije = paySomeonePage.getAuthorizationID();
                     referenceID = paySomeonePage.getRefrenceID();

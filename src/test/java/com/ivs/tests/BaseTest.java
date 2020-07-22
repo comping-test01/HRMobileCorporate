@@ -1,6 +1,6 @@
 package com.ivs.tests;
 
-import com.ivs.pages.HomePage;
+
 import com.ivs.pages.PageGenerator;
 import com.ivs.util.DriverManagerFactory;
 import com.ivs.util.ExcelUtil;
@@ -11,6 +11,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestContext;
 import org.testng.annotations.*;
 
 import static io.appium.java_client.touch.offset.PointOption.point;
@@ -19,51 +20,62 @@ import static io.appium.java_client.touch.offset.PointOption.point;
 public class BaseTest
 {
 
-    WebDriverWait wait;
     PageGenerator pageGen;
 
     Object[][] arrInputParams;
-    //String masterUsername;
-    //String masterPassword;
-    //String operaterUsername;
-    //String operaterPassword;
-    //String applicationAddress;
-    String appiumServerAddress;
-    String masterPIN;
 
-    private String reportDirectory = "reports";
-    private String reportFormat = "xml";
-    private String testName = "testPaySomeone";
+    String applicationPIN;
+    String remoteServerAddress;
+    String localServerAddress;
+    String serverAddress;
+    DriverManagerFactory.DriverType driverType;
+    String language;
+    String platform;
+
+
+
     protected AppiumDriver<MobileElement> driver = null;
-    DesiredCapabilities dc = new DesiredCapabilities();
-
-
-    private static AppiumDriverLocalService service;
-
 
     @BeforeClass
-    public void globalSetup () throws Exception {
+    @Parameters({"platform","language"})
+    public void setupApplication(@Optional("Android") String platform, @Optional("en") String language, ITestContext context) throws Exception {
 
         ExcelUtil objData = new ExcelUtil();
-        arrInputParams = objData.GetLoginValues("login.xlsx","Input1");     //"C:\\Appium\\login.xlsx"
-        //masterUsername = arrInputParams[0][0].toString();
-        //masterPassword = arrInputParams[0][1].toString();
-        //operaterUsername = arrInputParams[0][2].toString();
-        //operaterPassword = arrInputParams[0][3].toString();
-        //applicationAddress = arrInputParams[0][4].toString();
-        masterPIN = arrInputParams[0][0].toString();
-        if (masterPIN.length()==0){
-            //ako PIN nije definiran u login datoteci stavljamo defaultni
-            masterPIN = "789987";
-        }
-        appiumServerAddress = arrInputParams[0][1].toString();
-        if (appiumServerAddress.length()==0){
-            //ako nije definirana adresa appium servera, koristimo lokalnu adresu
-            appiumServerAddress = "http://localhost:4723/wd/hub";
+        arrInputParams = objData.GetLoginValues("login.xlsx","Input1");
+        applicationPIN = arrInputParams[0][0].toString();
+        localServerAddress = arrInputParams[0][1].toString();
+        remoteServerAddress = arrInputParams[0][2].toString();
+
+        serverAddress = (remoteServerAddress.length()==0) ? localServerAddress : remoteServerAddress;
+            serverAddress = localServerAddress;
+
+        DriverManagerFactory.DriverType localDriverType;
+
+        if(platform.equalsIgnoreCase("Android")){
+            localDriverType = DriverManagerFactory.DriverType.ANDROID;
+        } else if(platform.equalsIgnoreCase("IOS")) {
+            localDriverType = DriverManagerFactory.DriverType.IOS;
+        } else {
+            throw new RuntimeException("Browser is not correct");
         }
 
-        driver = (AndroidDriver<MobileElement>) DriverManagerFactory.getManager (DriverManagerFactory.DriverType.ANDROID).getDriver(appiumServerAddress);
+        if (driverType != localDriverType) {
+            if (driver != null) {
+                closeApplication();
+            }
+            driverType = localDriverType;
+            driver = (AndroidDriver<MobileElement>) DriverManagerFactory.getManager(localDriverType).getDriver(serverAddress);
+        }
 
+        this.language = language;
+        this.platform = platform;
+        context.setAttribute("language",language);
+        context.setAttribute("platform",platform);
+
+    }
+    @BeforeMethod
+    public void methodLevelSetup () {
+        pageGen = new PageGenerator(driver);
     }
 
     @AfterSuite
@@ -73,11 +85,7 @@ public class BaseTest
 
 
 
-    @BeforeMethod
-    public void methodLevelSetup () {
-        //Instantiate the Page Class
-        pageGen = new PageGenerator(driver);
-    }
+
 /*
     @AfterMethod
     public void logOut() {

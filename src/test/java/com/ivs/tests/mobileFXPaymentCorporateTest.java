@@ -59,7 +59,7 @@ public class mobileFXPaymentCorporateTest extends BaseTest {
         HomePage homePage = null;
 
         try {
-            loginPage.loginAndEnterPIN(masterPIN);
+            loginPage.loginAndEnterPIN(applicationPIN);
             homePage = new HomePage(driver);
 
 

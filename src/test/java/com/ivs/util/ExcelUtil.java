@@ -12,6 +12,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Iterator;
 
+
+import static com.ivs.util.Constant.inputFolderName;
+
 public class ExcelUtil {
 
 
@@ -201,12 +204,13 @@ public class ExcelUtil {
 
 
 
-    public Object[][] GetParameters(String FileName, String DataSheetName, int intColumns) {
+    public Object[][] GetParameters(String fileName, String DataSheetName, int intColumns) {
         Workbook wb = null;           //initialize Workbook null
         int TotalRows = 0;
         int intRow = 0;         // ne čitamo nazive stupaca
         try {
-            FileInputStream fis = new FileInputStream(ConstantA.inputFileFolder + FileName);
+            FileInputStream fis =
+                    new FileInputStream(System.getProperty("user.dir") + inputFolderName + fileName);
             wb = new XSSFWorkbook(fis);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -396,7 +400,7 @@ public class ExcelUtil {
         Workbook wb = null;           //initialize Workbook null
         int TotalRows = 0;
         int intRow = 0;         // ne čitamo nazive stupaca
-        String filePathAndName = ConstantA.loginInputFileFolder + FileName;
+        String filePathAndName = System.getProperty("user.dir") + inputFolderName + FileName;
         try {
             FileInputStream fis = new FileInputStream(filePathAndName);
             wb = new XSSFWorkbook(fis);
@@ -406,7 +410,7 @@ public class ExcelUtil {
             e1.printStackTrace();
         }
 
-        Object[][] arrParams = new Object[1][2];
+        Object[][] arrParams = new Object[1][3];
 
         Sheet sheet = wb.getSheet(DataSheetName);
         Iterator<Row> itr = sheet.iterator();    //iterating over excel file
@@ -420,11 +424,18 @@ public class ExcelUtil {
             arrParams[0][0] = cell.getStringCellValue();
         }
 
-        cell = row.getCell(1); //Appium server name
+        cell = row.getCell(1); //Appium local name
         if (cell == null) {
             arrParams[0][1] = "";}
         else {
             arrParams[0][1] = cell.getStringCellValue();
+        }
+
+        cell = row.getCell(2); //Appium server name
+        if (cell == null) {
+            arrParams[0][2] = "";}
+        else {
+            arrParams[0][2] = cell.getStringCellValue();
         }
 //
 //        cell = row.getCell(2); //OperaterUsername

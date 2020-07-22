@@ -54,7 +54,7 @@ public class BeneficiaryListTest extends BaseTest {
 
         //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
         try {
-            loginPage.loginAndEnterPIN(masterPIN);
+            loginPage.loginAndEnterPIN(applicationPIN);
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
             HomePage homePage = new HomePage(driver);
 
@@ -90,7 +90,7 @@ public class BeneficiaryListTest extends BaseTest {
             }
 
             beneficiaryListPage.addBeneficiary(IBAN, identifierName, beneficiaryName);
-            beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, masterPIN);
+            beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
 
             //validacija
             boolean found = beneficiaryListPage.checkIfSearchButtonExists(20,2);

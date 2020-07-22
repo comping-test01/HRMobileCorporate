@@ -50,7 +50,7 @@ public class PaymentListCorporateTest extends BaseTest {
 
         //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
         try {
-            loginPage.loginAndEnterPIN(masterPIN);
+            loginPage.loginAndEnterPIN(applicationPIN);
             //loginPage.enterPIN();
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
             HomePage homePage = new HomePage(driver);
@@ -99,11 +99,11 @@ public class PaymentListCorporateTest extends BaseTest {
                     break;
 
                 case "AUTHORIZE":
-                    paymentListPage.doAuthorize(masterPIN);
+                    paymentListPage.doAuthorize(applicationPIN);
                     break;
 
                 case "PAY":
-                    paymentListPage.doPay(masterPIN);
+                    paymentListPage.doPay(applicationPIN);
                     break;
 
                 default:

@@ -12,18 +12,28 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 
-public class LoginTest extends BaseTest {
+public class HRMobileCorporateLoginTest extends BaseTest {
     int intColumns = 3;
     String inputFileName;
     Object[][] outputParams = new Object [1][intColumns];
 
-    @Test (dataProvider = "loginData", dataProviderClass= DataProviderSource.class)
+    @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginInvalidPIN (Object [] objInput) throws InterruptedException {
-        SoftAssert soft = new SoftAssert();
+
         String masterPIN = objInput[0].toString();
+        Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+        String expectedText;
+
+
+
+        SoftAssert soft = new SoftAssert();
+
         try{
 
 
@@ -62,25 +72,26 @@ public class LoginTest extends BaseTest {
         }
     }
 
-    @Test (dataProvider = "loginData", dataProviderClass= DataProviderSource.class)
+    @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginValidPIN (Object [] objInput) throws InterruptedException {
         SoftAssert soft = new SoftAssert();
-        String masterPIN = objInput[0].toString();
+        String pin = objInput[0].toString();
         try {
             driver = pageGen.getDriver();
 
 
-            if (masterPIN.contains(",")){
-                masterPIN = masterPIN.split(",")[0];
+            if (pin.contains(",")){
+                pin = pin.split(",")[0];
             }
-            System.out.println(masterPIN);
+            System.out.println(pin);
             //driver.get(appiumServerAddress);
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             LoginPage loginPage = new LoginPage(driver);
-            loginPage.loginAndEnterPIN(masterPIN);
+            loginPage.loginAndEnterPIN(pin);
             HomePage homepage = new HomePage(driver);
             homepage.verifyLoginSuccess();
+
             outputParams[0][1] = "OK";
             outputParams[0][2] = "";
 
@@ -105,10 +116,9 @@ public class LoginTest extends BaseTest {
         homePage.doLogOut();
         Thread.sleep(3000);*/
 
-
         String testName = method.getName();
 
-        inputFileName = testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
+        inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
         ExcelUtil objData = new ExcelUtil();
         objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, "Android");
 

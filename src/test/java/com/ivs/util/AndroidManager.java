@@ -90,15 +90,13 @@ public class AndroidManager extends DriverManager {
         service = AppiumDriverLocalService.buildService(serviceBuilder);
 */
         if (!checkIfServerIsRunning(port)) {
-
-            System.out.println("Appium Server NOT running!!!");
+            throw new RuntimeException("Appium server not running!");
 
             //service.start();
             //appiumServerURL = service.getUrl();
-
         }
         else {
-            System.out.println("Appium server running on Port - " + port);
+            System.out.println("Appium server running on port - " + port);
         }
     }
 
