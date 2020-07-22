@@ -78,7 +78,7 @@ public class BaseTest
         //Instantiate the Page Class
         pageGen = new PageGenerator(driver);
     }
-
+/*
     @AfterMethod
     public void logOut() {
         HomePage homePage =new HomePage(driver);
@@ -87,7 +87,7 @@ public class BaseTest
         } catch (InterruptedException e) {
             System.out.println("***** logOut *****");
             e.printStackTrace();
-        }
+        }*/
 
 
 //        if (Utils.isElementPresent(By.xpath("//*[@text='ios-ic-closex']"),driver)){
@@ -106,7 +106,7 @@ public class BaseTest
 //        }
 
 
-    }
+    //}
 
     @AfterClass
     public void closeApplication()

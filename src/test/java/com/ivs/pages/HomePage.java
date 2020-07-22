@@ -12,8 +12,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import static io.appium.java_client.touch.offset.PointOption.point;
@@ -31,12 +33,15 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@id='back']")
     MobileElement backButton;
 
-
     @FindBy(xpath="//*[@text='Ionic App']")
     MobileElement iconicAppButton;
 
-    @FindBy(xpath="//*[@text='ic menu']")
+    @FindBy(xpath="//*[@text='menu']")
     MobileElement homeMenu;
+
+    @FindBy(xpath="//*[@text='ic menu']")
+    MobileElement homeMenu2;
+
 
     @FindBy(xpath="//*[@text='ic change comp Promijeni subjekt']")
     MobileElement changeCompanyButton;
@@ -55,7 +60,8 @@ public class HomePage extends BasePage {
     //@FindBy(xpath="//*[@class='android.view.View' and ./*[@text='ic payment']]")
     //@FindBy(xpath="//*[@text='ic arrow right' and (./preceding-sibling::* | ./following-sibling::*)[@text='Plaćanja']]")
     //@FindBy(xpath="//*[@id='menu-item-PAYMENTS']")
-    @FindBy(id="menu-item-PAYMENTS")
+    //@FindBy(id="menu-item-PAYMENTS")
+    @FindBy(xpath="//*[@text='Plaćanja']")
     MobileElement paymentsMainMenu;
 
     @FindBy(xpath="//*[@class='android.view.View' and ./*[@class='android.view.View' and ./*[@text='ic payment']]]")
@@ -85,7 +91,8 @@ public class HomePage extends BasePage {
     MobileElement fxPageTitleText;
 
     public void runHomeMenu() {
-        Utils.fluentWaitforElement(driver, homeMenu, 10,2);
+        wait.until(ExpectedConditions.visibilityOf(homeMenu));
+        //Utils.fluentWaitforElement(driver, homeMenu, 10,2);
         homeMenu.click();
     }
 
@@ -302,8 +309,15 @@ public class HomePage extends BasePage {
 
     public void doSelectPaymentAndBeneficiaryList(){
         AndroidDriver driver2 = (AndroidDriver) driver;
-        iconicAppButton.click();
+        //wait.until(ExpectedConditions.visibilityOf(iconicAppButton));
+        //iconicAppButton.click();
+        try {
+            Thread.sleep(6000);
+        } catch(InterruptedException e) {
+            System.out.println("got interrupted!");
+        }
         runHomeMenu();
+        wait.until(ExpectedConditions.visibilityOf(paymentsMainMenu));
         tapOnElement(paymentsMainMenu);
 
         try {
@@ -466,5 +480,21 @@ public class HomePage extends BasePage {
             setMainCompanyButton.click();
         }
     }
+    public boolean verifyLoginSuccess() {
+        try {
+
+            wait.until(ExpectedConditions.visibilityOf(homeMenu));
+            homeMenu.isDisplayed();
+
+            return true;
+
+        } catch (NoSuchElementException e) {
+
+            return false;
+
+        }
+    }
+
+
 
 }

@@ -146,7 +146,7 @@ public class TransferToMyselfCorporateTest extends BaseTest {
                 driver.findElement(By.xpath("//*[@text='ios-ic-closex']")).click();
                 Thread.sleep(1000);
             }
-            logOut();
+            //logOut();
 //
 //            driver.findElement(By.xpath("//*[@text='Ionic App']")).click();
 //            driver.findElement(By.xpath("//*[@text='ic menu']")).click();
@@ -179,18 +179,16 @@ public class TransferToMyselfCorporateTest extends BaseTest {
         }
         driver.findElement(By.xpath("//*[@text='Ionic App']")).click();
         driver.findElement(By.xpath("//*[@text='ic menu']")).click();
-
         //element = Utils.fluentWaitforElement(By.xpath("//*[@text='Početna']"), 20, 2);
         //element.click();
-
         if (isElementPresent(By.xpath("//*[@text='ic logout']"),driver)){
             ////*[@text='ios-ic-closex']
             driver.findElement(By.xpath("//*[@text='ic logout']")).click();
         }
     */
-    //    driver.close();
+        //    driver.close();
         driver.quit();
-       // driver.closeApp();
+        // driver.closeApp();
 
 
     }
