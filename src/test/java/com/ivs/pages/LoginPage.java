@@ -91,7 +91,7 @@ public class LoginPage extends BasePage {
 
         waitForClickableElement(driver,loginButton,30);
         loginButton.click();
-        waitForElement(driver,enterPinText,10);
+        //waitForElement(driver,enterPinText,10);
         enterPIN(strPIN);
         Thread.sleep(1000);
 
@@ -129,8 +129,20 @@ public class LoginPage extends BasePage {
 
     // Verify Wrong credentials
     public boolean verifyWrongCredentials() {
-        boolean wait = fluentWaitforElement(incorrectPINText, 5, 1);
-        return wait;
+        try {
+
+            wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(
+                            By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']")));
+            driver.findElement(By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']"));
+
+            return true;
+
+        } catch (NoSuchElementException e) {
+
+            return false;
+
+        }
     }
 
     public boolean preLoginLogoIsVisible(){
