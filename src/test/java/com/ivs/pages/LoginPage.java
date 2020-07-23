@@ -26,10 +26,15 @@ public class LoginPage extends BasePage {
 
 
 
-    @FindAll({ @FindBy(xpath = "//android.widget.Button[contains(@text, 'Prijava')]"),
+/*    @FindAll({
+                @FindBy(xpath = "//android.widget.Button[contains(@text, 'Prijava')]"),
                @FindBy(xpath = "//android.widget.Button[contains(@text, 'Login')]"),
-               @FindBy(xpath = "//android.widget.Button[contains(@text, 'Registriraj moj račun')]")
-    })
+               @FindBy(xpath = "//android.widget.Button[contains(@text, 'Registriraj moj račun')]"),
+            @FindBy(xpath = "//android.widget.Button[contains(@text, 'Register my account')]")
+    })*/
+
+
+    @FindBy(xpath = "//android.widget.Button[contains(@text, 'Prijava')] | //android.widget.Button[contains(@text, 'Login')] | //android.widget.Button[contains(@text, 'Registriraj moj račun')] | //android.widget.Button[contains(@text, 'Register my account')]")
     WebElement loginButton;
 
     @FindBy(xpath = "//span[contains(text(),'PIN')]")
