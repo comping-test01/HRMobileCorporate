@@ -9,6 +9,9 @@ import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.sql.SQLOutput;
 import java.util.NoSuchElementException;
 
 public class LoginPage extends BasePage {
@@ -20,10 +23,29 @@ public class LoginPage extends BasePage {
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
-    final String loginButtonXpath = "(((((//*[@class='android.view.View' and ./parent::*[@class='android.view.View' and ./parent::*[@class='android.view.View' and ./parent::*[@id='content-wrapper']]]]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[1]/*[@class='android.view.View'])[3]/*[@class='android.view.View'])[4]";
-    //final String loginButtonXpath ="//*[@class='android.widget.Button' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text]]]";
-    @FindBy(xpath=loginButtonXpath)
-    MobileElement loginButton;
+
+
+
+    @FindAll({ @FindBy(xpath = "//android.widget.Button[contains(@text, 'Prijava')]"),
+               @FindBy(xpath = "//android.widget.Button[contains(@text, 'Login')]"),
+               @FindBy(xpath = "//android.widget.Button[contains(@text, 'Registriraj moj račun')]")
+    })
+    WebElement loginButton;
+
+    @FindBy(xpath = "//span[contains(text(),'PIN')]")
+    WebElement enterPinText;
+
+    @FindBy(xpath = "//*[@class='android.widget.Button' and ./parent::*[./parent::*[(./preceding-sibling::* | ./following-sibling::*)[./*[@class='android.widget.Button']]]]]")
+    MobileElement selectLanguageButton;
+
+    @FindBy(xpath = "//*[@text='close HR' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[./*[@text='close EN']]]]")
+    WebElement selectHRButton;
+
+    @FindBy(xpath = "//*[@text='close EN' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[./*[@text='close HR']]]]")
+    WebElement selectENButton;
+
+    final String preLoginImageLogoXpath = "//android.widget.Image[contains(@text, 'prelogin-logo')]";
+
 
     final String loginButtonRegisterXpath = "//*[@text='Registriraj moj račun']";
     @FindBy(xpath=loginButtonRegisterXpath)
@@ -50,11 +72,21 @@ public class LoginPage extends BasePage {
 
     //*********Page Methods*********
 
-    public void loginAndEnterPIN(String strPIN) throws InterruptedException {
+    public void loginAndEnterPIN(String strPIN, String language) throws InterruptedException {
+        waitForClickableElement(driver, selectLanguageButton,10);
+        tapOnElement(selectLanguageButton);
+        if (language.equals("hr")){
+            waitForClickableElement(driver, selectHRButton,10);
+            selectHRButton.click();
+        }
+        else{
+            waitForClickableElement(driver, selectENButton,10);
+            selectENButton.click();
+        }
 
-        fluentWaitforElement(loginButton,60,5);
+        waitForClickableElement(driver,loginButton,30);
         loginButton.click();
-        Thread.sleep(2000);
+        waitForElement(driver,enterPinText,10);
         enterPIN(strPIN);
         Thread.sleep(1000);
 
@@ -96,8 +128,8 @@ public class LoginPage extends BasePage {
         return wait;
     }
 
-    public boolean isVisible(){
-        return driver.findElements(By.xpath(loginButtonXpath)).size() != 0;
+    public boolean preLoginLogoIsVisible(){
+        return driver.findElements(By.xpath(preLoginImageLogoXpath)).size() != 0;
     }
 
     public boolean isPINPageVisible(){

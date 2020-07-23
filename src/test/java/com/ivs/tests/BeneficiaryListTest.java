@@ -54,7 +54,7 @@ public class BeneficiaryListTest extends BaseTest {
 
         //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
         try {
-            loginPage.loginAndEnterPIN(applicationPIN);
+            loginPage.loginAndEnterPIN(applicationPIN,language);
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
             HomePage homePage = new HomePage(driver);
 

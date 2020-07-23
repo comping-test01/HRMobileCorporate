@@ -50,7 +50,7 @@ public class ExcelUtil {
         int startColumn;
 
         String fileExtension = ".xlsx";
-        String inputFilePathAndLocation = ConstantA.inputFileFolder + fileName;
+        String inputFilePathAndLocation = System.getProperty("user.dir") + inputFolderName + fileName;
 
         int extensionLastIndex = fileName.lastIndexOf(fileExtension);
         //int backslashLastIndex = fileName.lastIndexOf('\\');

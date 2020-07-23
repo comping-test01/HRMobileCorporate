@@ -77,6 +77,7 @@ public class BasePage extends PageGenerator {
         }
     }
 
+
     public boolean isElementPresent(MobileElement element, int timeOutSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeOutSeconds);
         try {
@@ -195,4 +196,41 @@ public class BasePage extends PageGenerator {
 
         new TouchAction(driver).press(pointOption1).waitAction(WaitOptions.waitOptions(Duration.ofMillis(475))).moveTo(pointOption2).release().perform();
     }
+
+    public static boolean waitForElement(WebDriver driver, WebElement element, int maxWait) {
+        boolean statusOfElementToBeReturned = false;
+        //long startTime = StopWatch.startTime();
+        WebDriverWait wait = new WebDriverWait(driver, maxWait);
+        try {
+            WebElement waitElement = wait.until(ExpectedConditions.visibilityOf(element));
+            if (waitElement.isDisplayed() && waitElement.isEnabled()) {
+                statusOfElementToBeReturned = true;
+                //Log.event("Element is displayed:: " + element.toString());
+            }
+        }
+        catch (Exception e) {
+            statusOfElementToBeReturned = false;
+            //Log.event("Unable to find a element after " + StopWatch.elapsedTime(startTime) + " sec ==> " + element.toString());
+        }
+        return statusOfElementToBeReturned;
+    }
+
+    public static boolean waitForClickableElement(WebDriver driver, WebElement element, int maxWait) {
+        boolean statusOfElementToBeReturned = false;
+        //long startTime = StopWatch.startTime();
+        WebDriverWait wait = new WebDriverWait(driver, maxWait);
+        try {
+            WebElement waitElement = wait.until(ExpectedConditions.elementToBeClickable(element));
+            if (waitElement.isDisplayed() && waitElement.isEnabled()) {
+                statusOfElementToBeReturned = true;
+                //Log.event("Element is displayed:: " + element.toString());
+            }
+        }
+        catch (Exception e) {
+            statusOfElementToBeReturned = false;
+            //Log.event("Unable to find a element after " + StopWatch.elapsedTime(startTime) + " sec ==> " + element.toString());
+        }
+        return statusOfElementToBeReturned;
+    }
+
 }

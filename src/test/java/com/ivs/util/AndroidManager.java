@@ -52,6 +52,9 @@ public class AndroidManager extends DriverManager {
             capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, ".MainActivity");
             capabilities.setCapability(MobileCapabilityType.NO_RESET, true);
             capabilities.setCapability("automationName","UiAutomator2");
+            capabilities.setCapability("skipDeviceInitialization", true);
+            capabilities.setCapability("skipServerInstallation", true);
+
 
 
             //deviceName":"192.168.5.19:5555","deviceUDID":"192.168.5.19:5555"

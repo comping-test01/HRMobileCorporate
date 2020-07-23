@@ -58,7 +58,7 @@ public class QuickAccessTest extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
 
         try {
-            loginPage.loginAndEnterPIN(applicationPIN);
+            loginPage.loginAndEnterPIN(applicationPIN,language);
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
             HomePage homePage = new HomePage(driver);
             QuickAccessPage quickAccessPage = new QuickAccessPage(driver);

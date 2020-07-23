@@ -59,7 +59,7 @@ public class HRMobileCorporatePaySomeoneTest extends BaseTest {
         HomePage homePage = null;
 
         try {
-            loginPage.loginAndEnterPIN(applicationPIN);
+            loginPage.loginAndEnterPIN(applicationPIN,language);
             homePage = new HomePage(driver);
 
             //homePage.skipSettingMainCompany();

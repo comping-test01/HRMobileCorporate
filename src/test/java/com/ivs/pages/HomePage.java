@@ -455,7 +455,7 @@ public class HomePage extends BasePage {
 
         LoginPage login = new LoginPage(driver);
 
-        while(!login.isVisible())
+        while(!login.preLoginLogoIsVisible())
             driver.navigate().back();
 
         //boolean exists = fluentWaitforElement(backButton,30,5);
@@ -481,18 +481,7 @@ public class HomePage extends BasePage {
         }
     }
     public boolean verifyLoginSuccess() {
-        try {
-
-            wait.until(ExpectedConditions.visibilityOf(homeMenu));
-            homeMenu.isDisplayed();
-
-            return true;
-
-        } catch (NoSuchElementException e) {
-
-            return false;
-
-        }
+        return waitForElement(driver,homeMenu,10);
     }
 
 

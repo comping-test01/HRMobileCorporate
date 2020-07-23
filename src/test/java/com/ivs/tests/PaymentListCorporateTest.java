@@ -50,7 +50,7 @@ public class PaymentListCorporateTest extends BaseTest {
 
         //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
         try {
-            loginPage.loginAndEnterPIN(applicationPIN);
+            loginPage.loginAndEnterPIN(applicationPIN,language);
             //loginPage.enterPIN();
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
             HomePage homePage = new HomePage(driver);

@@ -6,6 +6,7 @@ import com.ivs.util.DataProviderSource;
 import com.ivs.util.ExcelUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotSelectableException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -14,6 +15,7 @@ import org.testng.asserts.SoftAssert;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -25,37 +27,30 @@ public class HRMobileCorporateLoginTest extends BaseTest {
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginInvalidPIN (Object [] objInput) throws InterruptedException {
 
-        String masterPIN = objInput[0].toString();
+        String pin = objInput[0].toString();
         Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
         ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
         String expectedText;
-
-
 
         SoftAssert soft = new SoftAssert();
 
         try{
 
 
-            if (masterPIN.contains(",")){
-                masterPIN = masterPIN.split(",")[0];
+            if (pin.contains(",")){
+                pin = pin.split(",")[0];
             }
-            System.out.println(masterPIN);
+            System.out.println(pin);
             driver = pageGen.getDriver();
-            //driver.get(appiumServerAddress);
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
             //LoginPage loginPage = pageGen.GetInstance(LoginPage.class);
             LoginPage loginPage = new LoginPage(driver);
-            loginPage.loginAndEnterPIN(masterPIN);
-
-
-            //*************ASSERTIONS***********************
-            Thread.sleep(500); //It is better to use explicit wait here.
+            loginPage.loginAndEnterPIN(pin,language);
             loginPage.verifyWrongCredentials();
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='pages.loginPage.somethingWentWrong']")));
-            //page.GetInstance(LoginPage.class).verifyWrongCredentials(("pages.loginPage.somethingWentWrong"));
+
+
             outputParams[0][1] = "OK";
             outputParams[0][2] = "";
 
@@ -83,13 +78,14 @@ public class HRMobileCorporateLoginTest extends BaseTest {
             if (pin.contains(",")){
                 pin = pin.split(",")[0];
             }
-            System.out.println(pin);
+            System.out.println("Language:" + language);
             //driver.get(appiumServerAddress);
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             LoginPage loginPage = new LoginPage(driver);
-            loginPage.loginAndEnterPIN(pin);
+            loginPage.loginAndEnterPIN(pin,language);
             HomePage homepage = new HomePage(driver);
+
             homepage.verifyLoginSuccess();
 
             outputParams[0][1] = "OK";
