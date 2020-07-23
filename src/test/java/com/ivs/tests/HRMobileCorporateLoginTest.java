@@ -2,28 +2,27 @@ package com.ivs.tests;
 
 import com.ivs.pages.HomePage;
 import com.ivs.pages.LoginPage;
+import com.ivs.testrail.TRListener;
+import com.ivs.testrail.TestRailCase;
 import com.ivs.util.DataProviderSource;
 import com.ivs.util.ExcelUtil;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotSelectableException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-
+@Listeners(TRListener.class)
 public class HRMobileCorporateLoginTest extends BaseTest {
     int intColumns = 3;
     String inputFileName;
     Object[][] outputParams = new Object [1][intColumns];
 
+    @TestRailCase(testRailId = 289)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginInvalidPIN (Object [] objInput) throws InterruptedException {
 
@@ -67,6 +66,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
         }
     }
 
+    @TestRailCase(testRailId = 288)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginValidPIN (Object [] objInput) throws InterruptedException {
         SoftAssert soft = new SoftAssert();
