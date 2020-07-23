@@ -36,7 +36,7 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@text='Ionic App']")
     MobileElement iconicAppButton;
 
-    @FindBy(xpath="//*[@text='menu']")
+    @FindBy(xpath="//*[@text='menu'] | //*[@text='ic menu']")
     MobileElement homeMenu;
 
     @FindBy(xpath="//*[@text='ic menu']")
@@ -481,9 +481,14 @@ public class HomePage extends BasePage {
         }
     }
     public boolean verifyLoginSuccess() {
-        return waitForElement(driver,homeMenu,10);
+        try {
+            wait.until(ExpectedConditions.visibilityOf(homeMenu));
+            homeMenu.isDisplayed();
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
-
 
 
 }
