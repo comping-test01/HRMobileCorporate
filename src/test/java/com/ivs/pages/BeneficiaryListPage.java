@@ -10,6 +10,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BeneficiaryListPage extends BasePage{
 
@@ -25,28 +26,28 @@ public class BeneficiaryListPage extends BasePage{
     @FindBy(xpath = "//*[@class='android.view.View' and ./parent::*[@class='android.widget.RadioButton']]")
     MobileElement beneficiaryNameSelectRadioBtn;
 
-    @FindBy(xpath = "//*[@text='NOVI PRIMATELJ']")
+    @FindBy(xpath = "//*[@text='NOVI PRIMATELJ'] | //*[@text='NEW BENEFICIARY'] | //*[@class='android.widget.Button' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text]]]")
     MobileElement newBeneficiary;
 
-    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Ime korisnika*']]]")
+    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Ime korisnika*']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Beneficiary Name*']]]")
     MobileElement nameInput;
 
-    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Nadimak korisnika']]]")
+    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Nadimak korisnika']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Beneficiary Nickname']]]")
     MobileElement nicknameInput;
 
-    @FindBy(xpath = "//*[@text='DODAJ IDENTIFIKATOR']")
+    @FindBy(xpath = "//*[@text='DODAJ IDENTIFIKATOR'] | //*[@text='ADD IDENTIFIER']")
     MobileElement addIdentifier;
 
-    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Broj računa*']]]")
+    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Broj računa*']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Account number*']]]")
     MobileElement IBANInput;
 
     @FindBy(xpath = "//*[@text='ic acc number off']")
     MobileElement arrow;
 
-    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]]")
+    @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Account owner*']]]")
     MobileElement nameInput2;
 
-    @FindBy(xpath = "//*[@text='Dodaj']")
+    @FindBy(xpath = "//*[@text='Dodaj'] | //*[@text='Add']")
     MobileElement saveIdentifier;
 
     @FindBy(xpath = "//*[@text='Odustani']")
@@ -55,7 +56,7 @@ public class BeneficiaryListPage extends BasePage{
     @FindBy(xpath = "//*[@text='POTVRDI']")
     MobileElement cancelSaveIdentifierConfirmation;
 
-    @FindBy(xpath = "//*[@text='Spremi']")
+    @FindBy(xpath = "//*[@text='Spremi'] | //*[@text='Save']")
     MobileElement saveBeneficiary;
 
     @FindBy(xpath = "//*[@class='android.widget.EditText']")
@@ -92,28 +93,32 @@ public class BeneficiaryListPage extends BasePage{
     }
 
     public void addBeneficiary(String iban, String identifierName, String beneficiaryName) throws InterruptedException {
-        Utils.fluentWaitforElement(driver,newBeneficiary, 10, 2);
-
+        //Utils.fluentWaitforElement(driver,newBeneficiary, 10, 2);
+        Thread.sleep(10000);
         newBeneficiary.click();
-        Thread.sleep(500);
+        Thread.sleep(1500);
 
         addIdentifier.click();
-        Thread.sleep(500);
+        Thread.sleep(1500);
 
         IBANInput.click();
         IBANInput.sendKeys(iban);
-        Thread.sleep(500);
+        Thread.sleep(1500);
 
         arrow.click();
         //za svaki slučaj, ako ne postoji taj racun u aplikaciji
         nameInput2.click();
         nameInput2.sendKeys(identifierName);
         //--------------------------------
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         saveIdentifier.click();
-        Thread.sleep(500);
+        Thread.sleep(1500);
         //provjeriti je li spremanje prošlo bez greške
-        boolean errorMessageExists = fluentWaitforElementBoolean(By.xpath("//*[@text='Račun je već spremljen pod ovim primateljem']"), 10, 1);
+        nameInput.click();
+        nameInput.sendKeys(beneficiaryName);
+        saveBeneficiary.click();    //provjera poruke
+        Thread.sleep(5000);
+        /*boolean errorMessageExists = fluentWaitforElementBoolean(By.xpath("//*[@text='Račun je već spremljen pod ovim primateljem']"), 10, 1);
 
         if (errorMessageExists){
             cancelSaveIdentifier.click();
@@ -126,7 +131,7 @@ public class BeneficiaryListPage extends BasePage{
             nameInput.sendKeys(beneficiaryName);
             saveBeneficiary.click();    //provjera poruke
             Thread.sleep(5000);
-        }
+        }*/
 
     }
 
@@ -161,4 +166,5 @@ public class BeneficiaryListPage extends BasePage{
         boolean found = fluentWaitforElement(search,timeoutSec,pollingSec);
         return found;
     }
+
 }

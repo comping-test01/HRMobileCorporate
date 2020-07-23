@@ -58,6 +58,9 @@ public class PaySomeonePage extends BasePage {
     @FindBy(xpath="//*[@text='ic account owner']")
     MobileElement beneficiarySelectButton;
 
+    @FindBy(xpath ="//*[@class='android.widget.EditText' and ./parent::*[./parent::*[./parent::*[(./preceding-sibling::* | ./following-sibling::*)[./*[@class='android.view.View']]]]]]")
+    MobileElement beneficiarySerach;
+
     @FindBy(xpath="//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]]")
     MobileElement payeeName;
 
@@ -603,6 +606,17 @@ public class PaySomeonePage extends BasePage {
         Assert.assertEquals(Actualtext, "Odaberite primatelja");
 
 
+    }
+    public void checkBeneficiary(String beneficiaryName) throws Exception {
+        Thread.sleep(1500);
+        beneficiarySelectButton.click();
+        Thread.sleep(1500);
+        beneficiarySerach.click();
+        Thread.sleep(1000);
+        //sendKeys(beneficiaryName);
+
+        //*[@class='android.widget.Button' and ./parent::*[@text='Marko Horvat']]
+        //*[@class='android.widget.Button' and ./parent::*[@text='HR1023400091170013273 Naziv']]
     }
 }
 

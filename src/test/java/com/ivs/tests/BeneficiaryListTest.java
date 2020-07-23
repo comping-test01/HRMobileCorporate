@@ -1,10 +1,7 @@
 package com.ivs.tests;
 
 
-import com.ivs.pages.BeneficiaryListPage;
-import com.ivs.pages.ClientSelectPage;
-import com.ivs.pages.HomePage;
-import com.ivs.pages.LoginPage;
+import com.ivs.pages.*;
 import com.ivs.util.ExcelUtil;
 import com.ivs.util.Utils;
 import io.appium.java_client.AppiumDriver;
@@ -17,6 +14,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 
@@ -47,10 +46,12 @@ public class BeneficiaryListTest extends BaseTest {
         String IBAN = objInput[1].toString();
         String identifierName = objInput[2].toString();
         String beneficiaryName = objInput[3].toString();
+        String expectedText;
 
 
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         LoginPage loginPage = new LoginPage(driver);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
         //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
         try {
@@ -61,17 +62,18 @@ public class BeneficiaryListTest extends BaseTest {
             driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
             // odabir clienta za slucaj kad izbaci clientSelectPage pri loginu
+            /*expectedText = resourceBundle.getString("WelcomeMessage");
             if(clientSelectPage.isVisible()) {
                 clientSelectPage.doSearchAndSelectClient(companyName);
-                element = utils.fluentWaitforElement(By.xpath("//*[@text='Dobrodošli, ']"), 60, 2);
+                element = utils.fluentWaitforElement(By.xpath("//*[@text='"+expectedText+", ']"), 60, 2);
                 text = element.getText();
-                Assert.assertEquals(text, "Dobrodošli, ");
+                Assert.assertEquals(text, "\""+expectedText+", ");
             }
             // odabir clienta za slucaj kad ne izbaci
             else{
-                element = utils.fluentWaitforElement(By.xpath("//*[@text='Dobrodošli, ']"), 60, 2);
+                element = utils.fluentWaitforElement(By.xpath("//*[@text='"+expectedText+", ']"), 60, 2);
                 text = element.getText();
-                Assert.assertEquals(text, "Dobrodošli, ");
+                Assert.assertEquals(text, expectedText+", ");
                 //provjera je li potrebna promjena subjekta //*[@text='APOLLO HR D.O.O.']
 
                 if (!(isElementPresent(By.xpath("//*[@text='" + companyName + "' and @class='android.view.View']"), driver))) {
@@ -79,19 +81,21 @@ public class BeneficiaryListTest extends BaseTest {
                     homePage.doChangeCompanyClick();
                     clientSelectPage.doSearchAndSelectClient(companyName);
                 }
-            }
+            }*/
             homePage.doSelectPaymentAndBeneficiaryList();
             BeneficiaryListPage beneficiaryListPage = new BeneficiaryListPage(driver);
 
-            if (!beneficiaryListPage.checkIfNewBeneficiaryButtonExists()){
+            /*if (!beneficiaryListPage.checkIfNewBeneficiaryButtonExists()){
                 //ako ne postoji objekt, pokušavamo još jednom selektirati primatelhe
                 homePage.doSelectBeneficiaryList();
                 //paySomeonePage = new PaySomeonePage(driver);
-            }
+            }*/
 
             beneficiaryListPage.addBeneficiary(IBAN, identifierName, beneficiaryName);
-            beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
-
+            //beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
+            homePage.doSelectPaymentAndPaySomeone();
+            PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
+            paySomeonePage.checkBeneficiary(beneficiaryName);
             //validacija
             boolean found = beneficiaryListPage.checkIfSearchButtonExists(20,2);
             arrInputParams[intBrojac][4] = "OK";

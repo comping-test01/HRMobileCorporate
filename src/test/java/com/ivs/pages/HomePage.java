@@ -61,7 +61,7 @@ public class HomePage extends BasePage {
     //@FindBy(xpath="//*[@text='ic arrow right' and (./preceding-sibling::* | ./following-sibling::*)[@text='Plaćanja']]")
     //@FindBy(xpath="//*[@id='menu-item-PAYMENTS']")
     //@FindBy(id="menu-item-PAYMENTS")
-    @FindBy(xpath="//*[@text='Plaćanja']")
+    @FindBy(xpath="//*[@text='Plaćanja'] | //*[@id='menu-item-PAYMENTS'] | //*[@text='Payments']")
     MobileElement paymentsMainMenu;
 
     @FindBy(xpath="//*[@class='android.view.View' and ./*[@class='android.view.View' and ./*[@text='ic payment']]]")
@@ -69,6 +69,12 @@ public class HomePage extends BasePage {
 
     @FindBy(xpath="//*[@text='Plaćanja u stranoj valuti']")
     MobileElement fxPaymentsSubItem;
+
+    @FindBy(xpath="//*[@text='Beneficiary list'] | //*[@text='Primatelji i predlošci']")
+    MobileElement beneficiaryListPaymentsSubItem;
+
+    @FindBy(xpath = "//*[@text='Pay someone']")
+    MobileElement paySomeonePaymentsSubItem;
 
     //@FindBy(xpath="//*[@text='Plaćanje']")
     //@FindBy(xpath="//*[@id='menu-item-NEW_KUNA_PAYMENT_ORDER']")
@@ -317,10 +323,11 @@ public class HomePage extends BasePage {
             System.out.println("got interrupted!");
         }
         runHomeMenu();
-        wait.until(ExpectedConditions.visibilityOf(paymentsMainMenu));
-        tapOnElement(paymentsMainMenu);
-
-        try {
+        //wait.until(ExpectedConditions.visibilityOf(paymentsMainMenu));
+        paymentsMainMenu.click();
+        //tapOnElement(paymentsMainMenu);
+        beneficiaryListPaymentsSubItem.click();
+        /*try {
             Thread.sleep(500);
             driver2.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -347,9 +354,13 @@ public class HomePage extends BasePage {
         } catch (Exception e) {
             System.out.println("***** doSelectPaymentAndBeneficiaryList *****");
             e.printStackTrace();
-        }
+        }*/
     }
 
+    public void doSelectPaymentAndPaySomeone(){
+        paymentsMainMenu.click();
+        paySomeonePaymentsSubItem.click();
+    }
     public void doSelectBeneficiaryList(){
         AndroidDriver driver2 = (AndroidDriver) driver;
         System.out.println("*************************** doSelectBeneficiaryList ***************************");
