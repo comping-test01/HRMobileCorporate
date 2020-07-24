@@ -73,7 +73,7 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@text='Beneficiary list'] | //*[@text='Primatelji i predlošci']")
     MobileElement beneficiaryListPaymentsSubItem;
 
-    @FindBy(xpath = "//*[@text='Pay someone']")
+    @FindBy(xpath = "//*[@text='Pay someone'] | //*[@text='Plaćanje']")
     MobileElement paySomeonePaymentsSubItem;
 
     //@FindBy(xpath="//*[@text='Plaćanje']")
