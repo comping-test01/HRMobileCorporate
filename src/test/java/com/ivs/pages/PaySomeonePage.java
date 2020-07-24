@@ -59,7 +59,7 @@ public class PaySomeonePage extends BasePage {
     MobileElement beneficiarySelectButton;
 
     @FindBy(xpath ="//*[@class='android.widget.EditText' and ./parent::*[./parent::*[./parent::*[(./preceding-sibling::* | ./following-sibling::*)[./*[@class='android.view.View']]]]]]")
-    MobileElement beneficiarySerach;
+    MobileElement beneficiarySearch;
 
     @FindBy(xpath="//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]]")
     MobileElement payeeName;
@@ -607,14 +607,18 @@ public class PaySomeonePage extends BasePage {
 
 
     }
-    public void checkBeneficiary(String beneficiaryName) throws Exception {
-        Thread.sleep(1500);
+    public void checkBeneficiary(String beneficiaryName,String IBAN, String identifierName) throws Exception {
+        Thread.sleep(3500);
         beneficiarySelectButton.click();
+        Thread.sleep(6500);
+        beneficiarySearch.click();
+        Thread.sleep(3500);
+        beneficiarySearch.sendKeys(beneficiaryName);
+        Thread.sleep(4500);
+        driver.findElement(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+beneficiaryName+"']]")).click();
+        Thread.sleep(3500);
+        driver.findElement(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+IBAN+" "+identifierName+"']]")).click();
         Thread.sleep(1500);
-        beneficiarySerach.click();
-        Thread.sleep(1000);
-        //sendKeys(beneficiaryName);
-
         //*[@class='android.widget.Button' and ./parent::*[@text='Marko Horvat']]
         //*[@class='android.widget.Button' and ./parent::*[@text='HR1023400091170013273 Naziv']]
     }

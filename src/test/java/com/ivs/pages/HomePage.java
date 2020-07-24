@@ -357,9 +357,14 @@ public class HomePage extends BasePage {
         }*/
     }
 
-    public void doSelectPaymentAndPaySomeone(){
+    public void doSelectPaymentAndPaySomeone() throws InterruptedException {
+        Thread.sleep(1500);
+        homeMenu.click();
+        Thread.sleep(1500);
         paymentsMainMenu.click();
+        Thread.sleep(1500);
         paySomeonePaymentsSubItem.click();
+        Thread.sleep(1500);
     }
     public void doSelectBeneficiaryList(){
         AndroidDriver driver2 = (AndroidDriver) driver;
