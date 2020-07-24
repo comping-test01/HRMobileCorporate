@@ -24,7 +24,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
     @TestRailCase(testRailId = 289)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginInvalidPIN (Object [] objInput) throws InterruptedException {
+    public void loginInvalidPIN (Object [] objInput) {
 
         String pin = objInput[0].toString();
         Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
@@ -68,7 +68,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
     @TestRailCase(testRailId = 288)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginValidPIN (Object [] objInput) throws InterruptedException {
+    public void loginValidPIN (Object [] objInput) {
         SoftAssert soft = new SoftAssert();
         String pin = objInput[0].toString();
         try {
@@ -107,10 +107,10 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
     @AfterMethod
     public void saveOutput(Method method) throws InterruptedException {
-/*
-        HomePage homePage = pageGen.GetInstance(HomePage.class);
+
+        HomePage homePage = new HomePage(driver);
         homePage.doLogOut();
-        Thread.sleep(3000);*/
+        //Thread.sleep(3000);
 
         String testName = method.getName();
 

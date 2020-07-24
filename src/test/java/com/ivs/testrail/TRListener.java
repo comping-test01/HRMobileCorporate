@@ -18,6 +18,8 @@ public class TRListener implements ITestListener, IConfigurationListener {
     List<Integer> testRailIdsList;
     Map<String, Object> props;
     List<Map<String, Object>> testResultsList;
+    String platform;
+    String language;
 
     /**
      * Store the result associated with a failed configuration here. This can
@@ -76,8 +78,8 @@ public class TRListener implements ITestListener, IConfigurationListener {
         moreInfo.put("method", result.getMethod().getMethodName());
         Object[] obj = (Object[]) result.getParameters()[0];
 
-       String b =  (String) result.getTestContext().getAttribute("browser");
-       String l = (String) result.getTestContext().getAttribute("language");
+        platform =  (String) result.getTestContext().getAttribute("platform");
+        language = (String) result.getTestContext().getAttribute("language");
 
 
       if (result.getParameters() != null) {
@@ -111,7 +113,7 @@ public class TRListener implements ITestListener, IConfigurationListener {
     public void onFinish(ITestContext result)
     {
         //System.out.println("On finish:"+result.getName());
-        reporter.reportResult(testRailIdsList, testResultsList);
+        reporter.reportResult(platform, language, testRailIdsList, testResultsList);
 
     }
 

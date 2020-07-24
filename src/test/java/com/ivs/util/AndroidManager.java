@@ -52,8 +52,10 @@ public class AndroidManager extends DriverManager {
             capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, ".MainActivity");
             capabilities.setCapability(MobileCapabilityType.NO_RESET, true);
             capabilities.setCapability("automationName","UiAutomator2");
-            capabilities.setCapability("skipDeviceInitialization", true);
-            capabilities.setCapability("skipServerInstallation", true);
+            //capabilities.setCapability("skipDeviceInitialization", true);
+            //capabilities.setCapability("skipServerInstallation", true);
+
+
 
 
 
@@ -115,9 +117,6 @@ public class AndroidManager extends DriverManager {
         } catch (IOException e) {
             //If control comes here, then it means that the port is in use
             isServerRunning = true;
-
-        } finally {
-            serverSocket = null;
         }
         return isServerRunning;
     }

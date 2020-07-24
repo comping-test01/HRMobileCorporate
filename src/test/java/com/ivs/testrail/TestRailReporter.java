@@ -34,6 +34,7 @@ public class TestRailReporter {
     int runId = 0;
     public static Properties trProperties;
 
+
     public TestRailReporter() {
 
         try {
@@ -44,7 +45,6 @@ public class TestRailReporter {
 
             if (!trnabled) {
                 logger.info("TestRail listener is not enabled. Results will not be reported to TestRail.");
-                return;
             }
 
         } catch(Exception ex) {
@@ -54,7 +54,7 @@ public class TestRailReporter {
     }
 
 
-    public int createPlanAndRun(List<Integer> caseIds){
+    public int createPlanAndRun(String platform, String language, List<Integer> caseIds){
 
         try {
 
@@ -68,12 +68,12 @@ public class TestRailReporter {
 
         Map<String, Object> runProps = new HashMap<String, Object>();
                 runProps.put("include_all",false);
-                runProps.put("name",runName);
+                runProps.put("name",runName + "- '" + platform + "'" + "- '" + language + "'");
                 runProps.put("suite_id",suiteId);
                 runProps.put("case_ids", caseIds);
 
         Map<String, Object> planEntryProps = new HashMap<String, Object>();
-                planEntryProps.put("name",runName);
+                planEntryProps.put("name",runName + "- '" + platform + "'" + "- '" + language + "'");
                 planEntryProps.put("suite_id",suiteId);
                 planEntryProps.put("include_all",false);
                 planEntryProps.put("case_ids", caseIds);
@@ -103,10 +103,10 @@ public class TestRailReporter {
      * @param testResultsList - list of test results
      */
 
-    public void reportResult(List<Integer> caseIds, List<Map<String, Object>> testResultsList) {
+    public void reportResult(String platform, String language, List<Integer> caseIds, List<Map<String, Object>> testResultsList) {
 
 
-        createPlanAndRun(caseIds);
+        createPlanAndRun(platform,language,caseIds);
 
 
         for (Map<String, Object> testResult : testResultsList) {

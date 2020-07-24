@@ -56,9 +56,6 @@ public class LoginPage extends BasePage {
     @FindBy(xpath=loginButtonRegisterXpath)
     MobileElement loginButtonRegister;
 
-    @FindBy(xpath = "//span[contains(text(),'1/3')]")
-    MobileElement incorrectPINText;
-
 
     //driver.findElement(By.xpath("//*[@text='Registriraj moj račun']"));
     @FindBy(xpath="//*[@text='Registriraj moj račun']")
@@ -98,7 +95,7 @@ public class LoginPage extends BasePage {
 
     }
 
-    public void enterPIN() throws InterruptedException {
+    public void enterPIN() {
         boolean wait = fluentWaitforElement(loginButton,60,5);
         if (wait){
             loginButton.click();
@@ -116,13 +113,13 @@ public class LoginPage extends BasePage {
 
     }
 
-    public void enterPIN( String pin) throws InterruptedException {
+    public void enterPIN( String pin) {
         for(char c : pin.toCharArray())
             driver.findElement(By.xpath("//*[@text='"+c+"']")).click();
         okButton.click();
     }
 
-    public void pressLogin() throws InterruptedException {
+    public void pressLogin() {
         boolean wait = fluentWaitforElement(loginButton,5,1);
         loginButton.click();
     }
@@ -131,15 +128,16 @@ public class LoginPage extends BasePage {
     public boolean verifyWrongCredentials() {
         try {
 
-            wait.until(
+            /*wait.until(
                     ExpectedConditions.visibilityOfElementLocated(
                             By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']")));
             driver.findElement(By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']"));
-
+            */
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("textViewError")));
+            driver.findElement(By.id("textViewError"));
             return true;
 
         } catch (NoSuchElementException e) {
-
             return false;
 
         }
