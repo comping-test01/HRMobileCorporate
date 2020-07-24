@@ -90,7 +90,9 @@ public class BeneficiaryListTest extends BaseTest {
                 homePage.doSelectBeneficiaryList();
                 //paySomeonePage = new PaySomeonePage(driver);
             }*/
-
+            String pinNumber = "789987";
+            beneficiaryListPage.deleteAddedBeneficiary(beneficiaryName,pinNumber);
+            homePage.doSelectPaymentAndBeneficiaryList();
             beneficiaryListPage.addBeneficiary(IBAN, identifierName, beneficiaryName);
             //beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
             homePage.doSelectPaymentAndPaySomeone();

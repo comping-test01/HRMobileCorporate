@@ -10,6 +10,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 public class BeneficiaryListPage extends BasePage{
@@ -44,6 +45,9 @@ public class BeneficiaryListPage extends BasePage{
     @FindBy(xpath = "//*[@text='ic acc number off']")
     MobileElement arrow;
 
+    @FindBy(xpath = "//*[@text='ic grey dots']")
+    MobileElement grayDots;
+
     @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Account owner*']]]")
     MobileElement nameInput2;
 
@@ -67,10 +71,10 @@ public class BeneficiaryListPage extends BasePage{
     @FindBy(xpath = threeDotsXpath)
     MobileElement threeDots;
 
-    @FindBy(xpath = "//*[@text='Obriši']")
+    @FindBy(xpath = "//*[@text='Obriši'] | //*[@text='Delete']")
     MobileElement delete;
 
-    @FindBy(xpath = "//*[@text='POTVRDI']")
+    @FindBy(xpath = "//*[@text='POTVRDI'] | //*[@text='CONFIRM']")
     MobileElement confirm;
 
 
@@ -135,26 +139,33 @@ public class BeneficiaryListPage extends BasePage{
 
     }
 
-    public void checkAddedBeneficiary(String beneficiaryName, String pinNumber) throws Exception {
+    public void deleteAddedBeneficiary(String beneficiaryName, String pinNumber) throws Exception {
         //Utils.fluentWaitforElement(driver,search, 10, 2);
         Thread.sleep(5000);
-        boolean wait = fluentWaitforElement(search,20,1);
+        //boolean wait = fluentWaitforElement(search,20,1);
         search.click();
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         search.sendKeys(beneficiaryName);
         Thread.sleep(3000);
-        List<MobileElement> elements = driver.findElements(By.xpath(threeDotsXpath));
-        MobileElement grayDots = fluentWaitforElement(By.xpath("//*[@class='android.view.View' and ./*[@text='"+beneficiaryName+"']]/following-sibling::android.view.View/android.view.View"),40,1);
-        grayDots.click();
-        Thread.sleep(500);
-        delete.click();
-        Thread.sleep(500);
-        confirm.click();
-        Thread.sleep(1000);
+        //List<MobileElement> elements = driver.findElements(By.xpath(threeDotsXpath));
+        //MobileElement grayDots = fluentWaitforElement(By.xpath("//*[@class='android.view.View' and ./*[@text='"+beneficiaryName+"']]/following-sibling::android.view.View/android.view.View"),40,1);
+        try {
+            grayDots.isDisplayed();
+            grayDots.click();
+            Thread.sleep(1500);
+            delete.click();
+            Thread.sleep(500);
+            confirm.click();
+            Thread.sleep(1000);
 
-        LoginPage login = new LoginPage(driver);
-        login.enterPIN(pinNumber);
-        Thread.sleep(5000);
+            LoginPage login = new LoginPage(driver);
+            login.enterPIN(pinNumber);
+            Thread.sleep(5000);
+        }
+        catch(org.openqa.selenium.NoSuchElementException e){
+
+        }
+
     }
 
     public boolean checkIfNewBeneficiaryButtonExists(){
