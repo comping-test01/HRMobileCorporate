@@ -95,7 +95,7 @@ public class BeneficiaryListTest extends BaseTest {
             //beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
             homePage.doSelectPaymentAndPaySomeone();
             PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
-            paySomeonePage.checkBeneficiary(beneficiaryName);
+            paySomeonePage.checkBeneficiary(beneficiaryName, IBAN, identifierName);
             //validacija
             boolean found = beneficiaryListPage.checkIfSearchButtonExists(20,2);
             arrInputParams[intBrojac][4] = "OK";

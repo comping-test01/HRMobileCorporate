@@ -73,7 +73,7 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@text='Beneficiary list'] | //*[@text='Primatelji i predlošci']")
     MobileElement beneficiaryListPaymentsSubItem;
 
-    @FindBy(xpath = "//*[@text='Pay someone']")
+    @FindBy(xpath = "//*[@text='Pay someone'] | //*[@text='Plaćanje']")
     MobileElement paySomeonePaymentsSubItem;
 
     //@FindBy(xpath="//*[@text='Plaćanje']")
@@ -357,9 +357,14 @@ public class HomePage extends BasePage {
         }*/
     }
 
-    public void doSelectPaymentAndPaySomeone(){
+    public void doSelectPaymentAndPaySomeone() throws InterruptedException {
+        Thread.sleep(1500);
+        homeMenu.click();
+        Thread.sleep(1500);
         paymentsMainMenu.click();
+        Thread.sleep(1500);
         paySomeonePaymentsSubItem.click();
+        Thread.sleep(1500);
     }
     public void doSelectBeneficiaryList(){
         AndroidDriver driver2 = (AndroidDriver) driver;

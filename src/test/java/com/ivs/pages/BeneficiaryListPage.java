@@ -96,10 +96,10 @@ public class BeneficiaryListPage extends BasePage{
         //Utils.fluentWaitforElement(driver,newBeneficiary, 10, 2);
         Thread.sleep(10000);
         newBeneficiary.click();
-        Thread.sleep(1500);
+        Thread.sleep(3500);
 
         addIdentifier.click();
-        Thread.sleep(1500);
+        Thread.sleep(3500);
 
         IBANInput.click();
         IBANInput.sendKeys(iban);
