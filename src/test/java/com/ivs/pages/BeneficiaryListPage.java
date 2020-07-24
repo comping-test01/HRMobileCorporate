@@ -96,7 +96,7 @@ public class BeneficiaryListPage extends BasePage{
         //Utils.fluentWaitforElement(driver,newBeneficiary, 10, 2);
         Thread.sleep(10000);
         newBeneficiary.click();
-        Thread.sleep(3500);
+        Thread.sleep(4000);
 
         addIdentifier.click();
         Thread.sleep(3500);

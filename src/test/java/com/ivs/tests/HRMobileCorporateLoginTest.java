@@ -24,7 +24,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
     @TestRailCase(testRailId = 289)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginInvalidPIN (Object [] objInput) {
+    public void loginInvalidPINTest (Object [] objInput) {
 
         String pin = objInput[0].toString();
         Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
@@ -68,7 +68,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
     @TestRailCase(testRailId = 288)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginValidPIN (Object [] objInput) {
+    public void loginValidPINTest (Object [] objInput) {
         SoftAssert soft = new SoftAssert();
         String pin = objInput[0].toString();
         try {
@@ -116,7 +116,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
         inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
         ExcelUtil objData = new ExcelUtil();
-        objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, "Android");
+        objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, platform);
 
     }
 }

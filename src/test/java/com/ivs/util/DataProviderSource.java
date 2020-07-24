@@ -17,6 +17,9 @@ public class DataProviderSource {
         if (method.getName().toLowerCase().contains("login")){
             intColumns = 3;
         }
+        if (method.getName().toLowerCase().contains("beneficiarylist")){
+            intColumns = 6;
+        }
 
         inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1) + "InputParameters.xlsx";
         ExcelUtil objData = new ExcelUtil();
