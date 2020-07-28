@@ -105,7 +105,7 @@ public class TestRailListener implements ITestListener, IConfigurationListener {
     public void onStart(ITestContext result)
     {
 
-        System.out.println("On start Test:"+result.getName());
+        //System.out.println("On start Test:"+result.getName());
 
     }
 

@@ -22,7 +22,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
     String inputFileName;
     Object[][] outputParams = new Object [1][intColumns];
 
-    @TestRailCase(testRailId = 289)
+    @TestRailCase(testRailId = 3238)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginInvalidPINTest (Object [] objInput) {
 
@@ -39,7 +39,6 @@ public class HRMobileCorporateLoginTest extends BaseTest {
             if (pin.contains(",")){
                 pin = pin.split(",")[0];
             }
-            System.out.println(pin);
             driver = pageGen.getDriver();
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -66,7 +65,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
         }
     }
 
-    @TestRailCase(testRailId = 288)
+    @TestRailCase(testRailId = 3237)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
     public void loginValidPINTest (Object [] objInput) {
         SoftAssert soft = new SoftAssert();
@@ -78,8 +77,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
             if (pin.contains(",")){
                 pin = pin.split(",")[0];
             }
-            System.out.println("Language:" + language);
-            //driver.get(appiumServerAddress);
+
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             LoginPage loginPage = new LoginPage(driver);
@@ -110,13 +108,11 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
         HomePage homePage = new HomePage(driver);
         homePage.doLogOut();
-        //Thread.sleep(3000);
 
         String testName = method.getName();
 
         inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
         ExcelUtil objData = new ExcelUtil();
         objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, platform);
-
     }
 }
