@@ -2,7 +2,7 @@ package com.ivs.tests;
 
 import com.ivs.pages.HomePage;
 import com.ivs.pages.LoginPage;
-import com.ivs.testrail.TRListener;
+import com.ivs.testrail.TestRailListener;
 import com.ivs.testrail.TestRailCase;
 import com.ivs.util.DataProviderSource;
 import com.ivs.util.ExcelUtil;
@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-@Listeners(TRListener.class)
+@Listeners(TestRailListener.class)
 public class HRMobileCorporateLoginTest extends BaseTest {
     int intColumns = 3;
     String inputFileName;
