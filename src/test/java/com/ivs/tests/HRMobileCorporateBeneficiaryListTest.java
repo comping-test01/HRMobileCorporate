@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 
-public class BeneficiaryListTest extends BaseTest {
+public class HRMobileCorporateBeneficiaryListTest extends BaseTest {
 
 
     private Object [][] arrInputParams;
@@ -33,12 +33,12 @@ public class BeneficiaryListTest extends BaseTest {
     public Object[][] testData() {
 
         ExcelUtil objData = new ExcelUtil();
-        arrInputParams = objData.GetParameters("BeneficiaryListMobileInputParameters.xlsx","Input1",columns);
+        arrInputParams = objData.GetParameters("HRMobileCorporateBeneficiaryListNewBeneficiaryTestInputParameters.xlsx","Input1",columns);
         return arrInputParams;
     }
 
     @Test(dataProvider = "testData")
-    public void BeneficiaryListTest(Object [] objInput) throws InterruptedException {
+    public void beneficiaryListNewBeneficiaryTest(Object [] objInput) throws InterruptedException {
         MobileElement element;
         SoftAssert soft = new SoftAssert();
         driver = pageGen.getDriver();
@@ -124,7 +124,7 @@ public class BeneficiaryListTest extends BaseTest {
         WebElement element;
 
         ExcelUtil objData = new ExcelUtil();
-        objData.SaveParameters("BeneficiaryListMobileInputParameters.xlsx","Input1",arrInputParams,columns,2,"android");
+        objData.SaveParameters("HRMobileCorporateBeneficiaryListNewBeneficiaryTestInputParameters.xlsx","Input1",arrInputParams,columns,2,"android");
         driver.quit();
     }
 
