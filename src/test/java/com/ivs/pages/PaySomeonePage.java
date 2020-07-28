@@ -11,6 +11,8 @@ import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import java.text.SimpleDateFormat;
@@ -70,7 +72,8 @@ public class PaySomeonePage extends BasePage {
     @FindBy(xpath="//*[@class='android.widget.Button' and @text='NASTAVI']")
     MobileElement nextButton;
 
-
+    @FindBy(xpath="//*[@text and @class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Account owner*']]] | //*[@text and @class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Vlasnik računa*']]]")
+    MobileElement filledPayeeName;
 
 
     @FindBy(xpath ="//*[@text='Na datum']")
@@ -607,20 +610,35 @@ public class PaySomeonePage extends BasePage {
 
 
     }
-    public void checkBeneficiary(String beneficiaryName,String IBAN, String identifierName) throws Exception {
-        Thread.sleep(3500);
+    public void checkBeneficiary(String beneficiaryName,String IBAN, String identifierName, WebDriverWait wait) throws Exception {
+
+        //WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        wait.until(ExpectedConditions.elementToBeClickable(beneficiarySelectButton)).click();
         beneficiarySelectButton.click();
-        Thread.sleep(6500);
+
+        wait.until(ExpectedConditions.elementToBeClickable(beneficiarySearch)).click();
         beneficiarySearch.click();
-        Thread.sleep(3500);
+
+        wait.until(ExpectedConditions.visibilityOf(beneficiarySearch)).click();
         beneficiarySearch.sendKeys(beneficiaryName);
-        Thread.sleep(4500);
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+beneficiaryName+"']]"))).click();
         driver.findElement(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+beneficiaryName+"']]")).click();
-        Thread.sleep(3500);
-        driver.findElement(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+IBAN+" "+identifierName+"']]")).click();
-        Thread.sleep(1500);
-        //*[@class='android.widget.Button' and ./parent::*[@text='Marko Horvat']]
-        //*[@class='android.widget.Button' and ./parent::*[@text='HR1023400091170013273 Naziv']]
+
+        /*DEBUG Potentially different xpath according to the application state
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+IBAN+" "+identifierName+"']]"))).click();
+        driver.findElement(By.xpath("//*[@class='android.widget.Button' and ./parent::*[@text='"+IBAN+" "+identifierName+"']]")).click();*/
+        wait.until(ExpectedConditions.elementToBeClickable(filledPayeeName)).click();
+        String identifierInPaySomeone = filledPayeeName.getText();
+        if (identifierName.equalsIgnoreCase(identifierInPaySomeone)){
+
+        } else{
+
+            throw new RuntimeException("Wrong beneficiary identifier shown");
+
+        }
+
     }
 }
 
