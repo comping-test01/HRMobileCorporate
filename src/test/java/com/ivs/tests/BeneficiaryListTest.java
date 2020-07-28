@@ -8,6 +8,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.DataProvider;
@@ -47,13 +48,13 @@ public class BeneficiaryListTest extends BaseTest {
         String identifierName = objInput[2].toString();
         String beneficiaryName = objInput[3].toString();
         String expectedText;
-
+        WebDriverWait wait = new WebDriverWait(driver, 10);
 
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         LoginPage loginPage = new LoginPage(driver);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
-        //driver.findElement(By.xpath("//*[@text='ic menu']")).click();
+
         try {
             loginPage.loginAndEnterPIN(applicationPIN,language);
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
@@ -85,21 +86,13 @@ public class BeneficiaryListTest extends BaseTest {
             homePage.doSelectPaymentAndBeneficiaryList();
             BeneficiaryListPage beneficiaryListPage = new BeneficiaryListPage(driver);
 
-            /*if (!beneficiaryListPage.checkIfNewBeneficiaryButtonExists()){
-                //ako ne postoji objekt, pokušavamo još jednom selektirati primatelhe
-                homePage.doSelectBeneficiaryList();
-                //paySomeonePage = new PaySomeonePage(driver);
-            }*/
+            //DEBUG pinNumber exists for deletion purposes, to be removed
             String pinNumber = "789987";
-            beneficiaryListPage.deleteAddedBeneficiary(beneficiaryName,pinNumber);
-            homePage.doSelectPaymentAndBeneficiaryList();
-            beneficiaryListPage.addBeneficiary(IBAN, identifierName, beneficiaryName);
-            //beneficiaryListPage.checkAddedBeneficiary(beneficiaryName, applicationPIN);
+            beneficiaryListPage.deleteAddedBeneficiary(beneficiaryName,pinNumber, wait);
+            identifierName = beneficiaryListPage.addBeneficiary(IBAN, beneficiaryName, wait);
             homePage.doSelectPaymentAndPaySomeone();
             PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
-            paySomeonePage.checkBeneficiary(beneficiaryName, IBAN, identifierName);
-            //validacija
-            boolean found = beneficiaryListPage.checkIfSearchButtonExists(20,2);
+            paySomeonePage.checkBeneficiary(beneficiaryName, IBAN, identifierName, wait);
             arrInputParams[intBrojac][4] = "OK";
             arrInputParams[intBrojac][5] = "";
             intBrojac++;

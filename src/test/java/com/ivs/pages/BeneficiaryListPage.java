@@ -8,6 +8,8 @@ import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -66,6 +68,9 @@ public class BeneficiaryListPage extends BasePage{
     @FindBy(xpath = "//*[@class='android.widget.EditText']")
     MobileElement search;
 
+    @FindBy(xpath = "//*[@text='reset']")
+    MobileElement clearSearch;
+
     final String threeDotsXpath = "//*[@text='ic grey dots']";
     //final String threeDotsXpath = "//*[@class='android.view.View' and ./parent::*[./parent::*[./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text]]]] and ./*[@class='android.widget.Button']]";
     @FindBy(xpath = threeDotsXpath)
@@ -96,86 +101,73 @@ public class BeneficiaryListPage extends BasePage{
 
     }
 
-    public void addBeneficiary(String iban, String identifierName, String beneficiaryName) throws InterruptedException {
-        //Utils.fluentWaitforElement(driver,newBeneficiary, 10, 2);
-        Thread.sleep(10000);
-        newBeneficiary.click();
-        Thread.sleep(3500);
+    public String addBeneficiary(String iban, String beneficiaryName, WebDriverWait wait) throws InterruptedException {
+        //WebDriverWait wait = new WebDriverWait(driver, 10);
+        Thread.sleep(500);
+        wait.until(ExpectedConditions.elementToBeClickable(newBeneficiary)).click();
 
-        addIdentifier.click();
-        Thread.sleep(3500);
+        Thread.sleep(500);
+        wait.until(ExpectedConditions.elementToBeClickable(addIdentifier)).click();
 
-        IBANInput.click();
+        wait.until(ExpectedConditions.elementToBeClickable(IBANInput)).click();
+
         IBANInput.sendKeys(iban);
-        Thread.sleep(1500);
 
-        arrow.click();
-        //za svaki slučaj, ako ne postoji taj racun u aplikaciji
-        nameInput2.click();
-        nameInput2.sendKeys(identifierName);
-        //--------------------------------
+        wait.until(ExpectedConditions.elementToBeClickable(arrow)).click();
+
         Thread.sleep(1500);
-        saveIdentifier.click();
-        Thread.sleep(1500);
-        //provjeriti je li spremanje prošlo bez greške
-        nameInput.click();
+        String identifierSystemName = nameInput2.getText();
+
+        wait.until(ExpectedConditions.elementToBeClickable(saveIdentifier)).click();
+
+        wait.until(ExpectedConditions.elementToBeClickable(nameInput)).click();
+
+        Thread.sleep(500);
         nameInput.sendKeys(beneficiaryName);
-        saveBeneficiary.click();    //provjera poruke
-        Thread.sleep(5000);
-        /*boolean errorMessageExists = fluentWaitforElementBoolean(By.xpath("//*[@text='Račun je već spremljen pod ovim primateljem']"), 10, 1);
+        wait.until(ExpectedConditions.elementToBeClickable(saveBeneficiary)).click();
 
-        if (errorMessageExists){
-            cancelSaveIdentifier.click();
-            Thread.sleep(2000);
-            cancelSaveIdentifierConfirmation.click();
-            Thread.sleep(2000);
-            cancelSaveIdentifier.click();
-        }else{
-            nameInput.click();
-            nameInput.sendKeys(beneficiaryName);
-            saveBeneficiary.click();    //provjera poruke
-            Thread.sleep(5000);
-        }*/
-
+        return identifierSystemName;
     }
 
-    public void deleteAddedBeneficiary(String beneficiaryName, String pinNumber) throws Exception {
-        //Utils.fluentWaitforElement(driver,search, 10, 2);
-        Thread.sleep(5000);
-        //boolean wait = fluentWaitforElement(search,20,1);
-        search.click();
-        Thread.sleep(1500);
+    public void deleteAddedBeneficiary(String beneficiaryName, String pinNumber, WebDriverWait wait) throws Exception {
+        //WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.elementToBeClickable(search)).click();
+        Thread.sleep(500);
         search.sendKeys(beneficiaryName);
-        Thread.sleep(3000);
-        //List<MobileElement> elements = driver.findElements(By.xpath(threeDotsXpath));
-        //MobileElement grayDots = fluentWaitforElement(By.xpath("//*[@class='android.view.View' and ./*[@text='"+beneficiaryName+"']]/following-sibling::android.view.View/android.view.View"),40,1);
+        Thread.sleep(500);
+
         try {
             grayDots.isDisplayed();
             grayDots.click();
-            Thread.sleep(1500);
-            delete.click();
-            Thread.sleep(500);
-            confirm.click();
-            Thread.sleep(1000);
+            wait.until(ExpectedConditions.elementToBeClickable(delete)).click();
 
+            wait.until(ExpectedConditions.elementToBeClickable(confirm)).click();
+
+            Thread.sleep(500);
             LoginPage login = new LoginPage(driver);
             login.enterPIN(pinNumber);
-            Thread.sleep(5000);
+            wait.until(ExpectedConditions.elementToBeClickable(search)).click();
+
+            Thread.sleep(500);
+            try {
+                clearSearch.click();
+                Thread.sleep(500);
+            }
+            catch(org.openqa.selenium.NoSuchElementException e){
+
+            }
         }
         catch(org.openqa.selenium.NoSuchElementException e){
+            try {
+                clearSearch.click();
+                Thread.sleep(500);
+            }
+            catch (org.openqa.selenium.NoSuchElementException er){
 
+            }
         }
 
     }
 
-    public boolean checkIfNewBeneficiaryButtonExists(){
-        boolean exists = fluentWaitforElement(newBeneficiary,20,5);
-        return exists;
-    }
-
-    public boolean checkIfSearchButtonExists(int timeoutSec, int pollingSec){
-        boolean found = fluentWaitforElement(search,timeoutSec,pollingSec);
-        return found;
-    }
 
 }
