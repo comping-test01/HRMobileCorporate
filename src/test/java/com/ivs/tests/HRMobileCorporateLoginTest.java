@@ -2,7 +2,7 @@ package com.ivs.tests;
 
 import com.ivs.pages.HomePage;
 import com.ivs.pages.LoginPage;
-import com.ivs.testrail.TRListener;
+import com.ivs.testrail.TestRailListener;
 import com.ivs.testrail.TestRailCase;
 import com.ivs.util.DataProviderSource;
 import com.ivs.util.ExcelUtil;
@@ -16,15 +16,15 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-@Listeners(TRListener.class)
+@Listeners(TestRailListener.class)
 public class HRMobileCorporateLoginTest extends BaseTest {
     int intColumns = 3;
     String inputFileName;
     Object[][] outputParams = new Object [1][intColumns];
 
-    @TestRailCase(testRailId = 289)
+    @TestRailCase(testRailId = 3238)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginInvalidPIN (Object [] objInput) {
+    public void loginInvalidPINTest (Object [] objInput) {
 
         String pin = objInput[0].toString();
         Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
@@ -39,7 +39,6 @@ public class HRMobileCorporateLoginTest extends BaseTest {
             if (pin.contains(",")){
                 pin = pin.split(",")[0];
             }
-            System.out.println(pin);
             driver = pageGen.getDriver();
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -66,9 +65,9 @@ public class HRMobileCorporateLoginTest extends BaseTest {
         }
     }
 
-    @TestRailCase(testRailId = 288)
+    @TestRailCase(testRailId = 3237)
     @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void loginValidPIN (Object [] objInput) {
+    public void loginValidPINTest (Object [] objInput) {
         SoftAssert soft = new SoftAssert();
         String pin = objInput[0].toString();
         try {
@@ -78,8 +77,7 @@ public class HRMobileCorporateLoginTest extends BaseTest {
             if (pin.contains(",")){
                 pin = pin.split(",")[0];
             }
-            System.out.println("Language:" + language);
-            //driver.get(appiumServerAddress);
+
 
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             LoginPage loginPage = new LoginPage(driver);
@@ -110,13 +108,11 @@ public class HRMobileCorporateLoginTest extends BaseTest {
 
         HomePage homePage = new HomePage(driver);
         homePage.doLogOut();
-        //Thread.sleep(3000);
 
         String testName = method.getName();
 
         inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
         ExcelUtil objData = new ExcelUtil();
-        objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, "Android");
-
+        objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, platform);
     }
 }

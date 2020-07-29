@@ -6,14 +6,15 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 
 
-public class TRListener implements ITestListener, IConfigurationListener {
+public class TestRailListener implements ITestListener, IConfigurationListener {
 
-    private Logger logger = Logger.getLogger(TRListener.class.getName());
+    private Logger logger = Logger.getLogger(TestRailListener.class.getName());
     private TestRailReporter reporter;
     List<Integer> testRailIdsList;
     Map<String, Object> props;
@@ -28,13 +29,12 @@ public class TRListener implements ITestListener, IConfigurationListener {
      */
     private ThreadLocal<ITestResult> testSkipResult = new ThreadLocal<ITestResult>();
 
-    public TRListener() {
+    public TestRailListener() {
         try {
             reporter = new TestRailReporter();
             testRailIdsList = new ArrayList<Integer>();
             props = new HashMap<String, Object>();
             testResultsList = new ArrayList<Map<String,Object>>();
-
             //enabled = reporter.isEnabled();
         } catch (Throwable ex) {
             logger.severe("Ran into exception initializing reporter: " + ex.getMessage());
@@ -44,76 +44,81 @@ public class TRListener implements ITestListener, IConfigurationListener {
 
 
     private void reportResult(ITestResult result) {
-    try {
+        try {
 
-      Method method = result.getMethod().getConstructorOrMethod().getMethod();
-      int status = result.getStatus();
-      Throwable throwable = result.getThrowable();
+            Method method = result.getMethod().getConstructorOrMethod().getMethod();
+            int status = result.getStatus();
+            Throwable throwable = result.getThrowable();
 
-      TestRailCase trCase = method.getAnnotation(TestRailCase.class);
-      int trID = trCase.testRailId();
-      testRailIdsList.add(trID);
+            TestRailCase trCase = method.getAnnotation(TestRailCase.class);
+            int trID = trCase.testRailId();
+            testRailIdsList.add(trID);
 
-      Test test = method.getAnnotation(Test.class);
+            Test test = method.getAnnotation(Test.class);
 
-      Map<String, Object> props = new HashMap<String, Object>();
-      long elapsed = (result.getEndMillis() - result.getStartMillis()) / 1000;
-       elapsed = elapsed == 0 ? 1 : elapsed; //we can only track 1 second as the smallest unit
+            Map<String, Object> props = new HashMap<String, Object>();
+            long elapsed = (result.getEndMillis() - result.getStartMillis()) / 1000;
+            elapsed = elapsed == 0 ? 1 : elapsed; //we can only track 1 second as the smallest unit
 
-        props.put("trID",  trID);
-        props.put("elapsed",  elapsed + "s");
-        props.put("status", getStatus(status));
-        props.put("throwable", throwable);
+            props.put("trID",  trID);
+            props.put("elapsed",  elapsed + "s");
+            props.put("status", getStatus(status));
+            props.put("throwable", throwable);
 
-        //override if needed
-        if (status == ITestResult.SKIP) {
-            ITestResult skipResult = testSkipResult.get();
-            if (skipResult != null) {
-                props.put("throwable", skipResult.getThrowable());
+            //override if needed
+            if (status == ITestResult.SKIP) {
+                ITestResult skipResult = testSkipResult.get();
+                if (skipResult != null) {
+                    props.put("throwable", skipResult.getThrowable());
+                }
             }
+
+            Map<String, String> moreInfo = new LinkedHashMap<String, String>();
+            moreInfo.put("class", result.getMethod().getRealClass().getCanonicalName());
+            moreInfo.put("method", result.getMethod().getMethodName());
+            Object[] obj = (Object[]) result.getParameters()[0];
+
+            platform =  (String) result.getTestContext().getAttribute("platform");
+            language = (String) result.getTestContext().getAttribute("language");
+
+            props.put("platform", platform);
+            props.put("language", language);
+
+
+            if (result.getParameters() != null) {
+                moreInfo.put("parameters", Arrays.toString(obj));
+            }
+            props.put("moreInfo", moreInfo);
+            //reporter.reportResult(testRailIdsList, props);
+            testResultsList.add(props);
+
+
+        } catch (Exception ex) {
+            // only log and do nothing else
+            //logger.severe("Ran into exception " + ex.getMessage());
+            //logger.severe("Ran into exception " + ex.printStackTrace());
+            ex.printStackTrace();
         }
-
-        Map<String, String> moreInfo = new LinkedHashMap<String, String>();
-        moreInfo.put("class", result.getMethod().getRealClass().getCanonicalName());
-        moreInfo.put("method", result.getMethod().getMethodName());
-        Object[] obj = (Object[]) result.getParameters()[0];
-
-        platform =  (String) result.getTestContext().getAttribute("platform");
-        language = (String) result.getTestContext().getAttribute("language");
-
-
-      if (result.getParameters() != null) {
-       moreInfo.put("parameters", Arrays.toString(obj));
-      }
-
-
-        props.put("moreInfo", moreInfo);
-
-        //reporter.reportResult(testRailIdsList, props);
-        testResultsList.add(props);
-
-
-    } catch (Exception ex) {
-      // only log and do nothing else
-      //logger.severe("Ran into exception " + ex.getMessage());
-        //logger.severe("Ran into exception " + ex.printStackTrace());
-        ex.printStackTrace();
     }
-  }
-
 
     @Override
     public void onStart(ITestContext result)
     {
 
-        //System.out.println("On start:"+result.getName());
+        //System.out.println("On start Test:"+result.getName());
+
     }
 
     @Override
     public void onFinish(ITestContext result)
     {
-        //System.out.println("On finish:"+result.getName());
-        reporter.reportResult(platform, language, testRailIdsList, testResultsList);
+        try {
+            reporter.reportResult(platform, language, testRailIdsList, testResultsList);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (APIException e) {
+            throw new RuntimeException(e.getMessage());
+        }
 
     }
 
@@ -146,7 +151,7 @@ public class TRListener implements ITestListener, IConfigurationListener {
         //System.out.println(result.getName()+" test case started");
 
     }
-    
+
     // When Test case get passed, this method is called.
     @Override
     public void onTestSuccess(ITestResult result)
@@ -166,6 +171,7 @@ public class TRListener implements ITestListener, IConfigurationListener {
     public void onConfigurationSkip(ITestResult iTestResult) {
         //nothing here
     }
+
 
 
     private TestRailStatus getStatus(int status) {

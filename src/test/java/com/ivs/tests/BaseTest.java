@@ -38,7 +38,7 @@ public class BaseTest
 
     @BeforeClass
     @Parameters({"platform","language"})
-    public void setupApplication(@Optional("Android") String platform, @Optional("en") String language, ITestContext context) throws Exception {
+    public void setupApplication(@Optional("Android") String platform, @Optional("hr") String language, ITestContext context) throws Exception {
 
         ExcelUtil objData = new ExcelUtil();
         arrInputParams = objData.GetLoginValues("login.xlsx","Input1");

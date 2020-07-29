@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * This class is responsible with communicating with TestRail and reporting results to it.
  *
- * It's invoked by {@link TRListener} and has methods that can be
+ * It's invoked by {@link TestRailListener} and has methods that can be
  * directly invoked from the test code as well.
  *
  */
@@ -29,11 +29,11 @@ public class TestRailReporter {
     public static final String KEY_ELAPSED = "elapsed";
     public static final String KEY_THROWABLE = "throwable";
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static final String planName = String.format("Plan - '%s'", SIMPLE_DATE_FORMAT.format(new Date()));
-    public static final String runName = String.format("Run - '%s'", SIMPLE_DATE_FORMAT.format(new Date()));
+    public static final String planTime = String.format("Plan - '%s'", SIMPLE_DATE_FORMAT.format(new Date()));
+    public static final String runTime = String.format("Run - '%s'", SIMPLE_DATE_FORMAT.format(new Date()));
+
     int runId = 0;
     public static Properties trProperties;
-
 
     public TestRailReporter() {
 
@@ -45,6 +45,7 @@ public class TestRailReporter {
 
             if (!trnabled) {
                 logger.info("TestRail listener is not enabled. Results will not be reported to TestRail.");
+                return;
             }
 
         } catch(Exception ex) {
@@ -54,47 +55,50 @@ public class TestRailReporter {
     }
 
 
-    public int createPlanAndRun(String platform, String language, List<Integer> caseIds){
+    public int createPlanAndRun(String browser, String language, List<Integer> caseIds){
+        int planId = 0;
 
         try {
 
-        String url = trProperties.getProperty("testrail_url");
-        String username = trProperties.getProperty("testrail_username");
-        String password = trProperties.getProperty("testrail_pwd");
-        String suiteId = trProperties.getProperty("testrail_suite_id");
-        String projectId = trProperties.getProperty("testrail_projectId");
+            String url = trProperties.getProperty("testrailUrl");
+            String username = trProperties.getProperty("testrailUsername");
+            String password = trProperties.getProperty("testrailPwd");
+            String suiteId = trProperties.getProperty("testrailSuiteId");
+            String projectId = trProperties.getProperty("testrailProjectId");
+            String bankName = trProperties.getProperty("testrailBankName");
 
-        client = new TestRailClient(url,username,password);
+            String planName = planTime + " - " + bankName.toUpperCase() + " - automation";
+            String runName = runTime + " - " + browser.toUpperCase() + " - automation";;
 
-        Map<String, Object> runProps = new HashMap<String, Object>();
-                runProps.put("include_all",false);
-                runProps.put("name",runName + "- '" + platform + "'" + "- '" + language + "'");
-                runProps.put("suite_id",suiteId);
-                runProps.put("case_ids", caseIds);
+            client = new TestRailClient(url,username,password);
 
-        Map<String, Object> planEntryProps = new HashMap<String, Object>();
-                planEntryProps.put("name",runName + "- '" + platform + "'" + "- '" + language + "'");
-                planEntryProps.put("suite_id",suiteId);
-                planEntryProps.put("include_all",false);
-                planEntryProps.put("case_ids", caseIds);
-                planEntryProps.put("runs", Lists.newArrayList(runProps));
+            Map<String, Object> runProps = new HashMap<String, Object>();
+            runProps.put("include_all",false);
+            runProps.put("name",runName);
+            runProps.put("suite_id",suiteId);
+            runProps.put("case_ids", caseIds);
 
-        Map<String, Object> planprops = new HashMap<String, Object>();
-                planprops.put("name",planName);
-                planprops.put("entries",Lists.newArrayList(planEntryProps));
-        Plan plan = client.addPlan(projectId, planName,null, planprops);
+            Map<String, Object> planEntryProps = new HashMap<String, Object>();
+            planEntryProps.put("name",runName);
+            planEntryProps.put("suite_id",suiteId);
+            planEntryProps.put("include_all",false);
+            planEntryProps.put("case_ids", caseIds);
+            planEntryProps.put("runs", Lists.newArrayList(runProps));
 
-        runId = plan.entries.get(0).runs.get(0).id;
-        System.out.println("Generirani run: " + runId);
+            Map<String, Object> planprops = new HashMap<String, Object>();
+            planprops.put("name",planName);
+            planprops.put("entries",Lists.newArrayList(planEntryProps));
+            Plan plan = client.addPlan(projectId, planName,null, planprops);
+            runId = plan.entries.get(0).runs.get(0).id;
 
+            planId = plan.id;
 
         }   catch(Exception e)  {
 
             e.printStackTrace();
-
         }
-        return runId;
-        }
+        return planId;
+    }
 
 
     /**
@@ -103,59 +107,59 @@ public class TestRailReporter {
      * @param testResultsList - list of test results
      */
 
-    public void reportResult(String platform, String language, List<Integer> caseIds, List<Map<String, Object>> testResultsList) {
+    public void reportResult(String browser, String language, List<Integer> caseIds, List<Map<String, Object>> testResultsList) throws IOException, APIException {
 
-
-        createPlanAndRun(platform,language,caseIds);
-
+        int planId = createPlanAndRun(browser, language, caseIds);
 
         for (Map<String, Object> testResult : testResultsList) {
+            int trID = (Integer)testResult.get(TEST_RAIL_CASE_ID);
+            TestRailStatus resultStatus = (TestRailStatus)testResult.get(KEY_STATUS);
+            Throwable throwable = (Throwable)testResult.get(KEY_THROWABLE);
+            String elapsed = (String)testResult.get(KEY_ELAPSED);
+            String screenshotUrl = (String)testResult.get(KEY_SCREENSHOT_URL);
+            Map<String, String> moreInfo = (Map<String, String>)testResult.get(KEY_MORE_INFO);
 
+            try {
 
-        int trID = (Integer)testResult.get(TEST_RAIL_CASE_ID);
-        TestRailStatus resultStatus = (TestRailStatus)testResult.get(KEY_STATUS);
-        Throwable throwable = (Throwable)testResult.get(KEY_THROWABLE);
-        String elapsed = (String)testResult.get(KEY_ELAPSED);
-        String screenshotUrl = (String)testResult.get(KEY_SCREENSHOT_URL);
-        Map<String, String> moreInfo = (Map<String, String>)testResult.get(KEY_MORE_INFO);
-
-        try {
-
-            StringBuilder comment = new StringBuilder("More info:\n");
-            if (moreInfo != null && !moreInfo.isEmpty()) {
-                for (Map.Entry<String, String> entry: moreInfo.entrySet()) {
-                    comment.append("- ").append(entry.getKey()).append(" : ")
-                            .append('`').append(entry.getValue()).append("`\n");
+                StringBuilder comment = new StringBuilder("More info:\n");
+                if (moreInfo != null && !moreInfo.isEmpty()) {
+                    for (Map.Entry<String, String> entry: moreInfo.entrySet()) {
+                        comment.append("- ").append(entry.getKey()).append(" : ")
+                                .append('`').append(entry.getValue()).append("`\n");
+                    }
+                } else {
+                    comment.append("- `none`\n");
                 }
-            } else {
-                comment.append("- `none`\n");
-            }
-            comment.append("\n");
-            if (screenshotUrl != null && !screenshotUrl.isEmpty()) {
-                comment.append("![](").append(screenshotUrl).append(")\n\n");
-            }
-            if (resultStatus.equals(TestRailStatus.SKIP)) {
-                comment.append("Test skipped because of configuration method failure. " +
-                        "Related config error (if captured): \n\n");
-                comment.append(getStackTraceAsString(throwable));
-            }
-            if (resultStatus.equals(TestRailStatus.FAIL)) {
-                comment.append("Test failed with following exception (if captured): \n\n");
-                comment.append(getStackTraceAsString(throwable));
-            }
+                comment.append("\n");
+                if (screenshotUrl != null && !screenshotUrl.isEmpty()) {
+                    comment.append("![](").append(screenshotUrl).append(")\n\n");
+                }
+                if (resultStatus.equals(TestRailStatus.SKIP)) {
+                    comment.append("Test skipped because of configuration method failure. " +
+                            "Related config error (if captured): \n\n");
+                    comment.append(getStackTraceAsString(throwable));
+                }
+                if (resultStatus.equals(TestRailStatus.FAIL)) {
+                    comment.append("Test failed with following exception (if captured): \n\n");
+                    comment.append(getStackTraceAsString(throwable));
+                }
 
-            //add the result
-            Map<String, Object> body = new HashMap<String, Object>();
-            body.put("status_id", getStatus(resultStatus));
-            body.put("comment", new String(comment.toString().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
-            body.put("elapsed", elapsed);
+                //add the result
+                Map<String, Object> body = new HashMap<String, Object>();
+                body.put("status_id", getStatus(resultStatus));
+                body.put("comment", new String(comment.toString().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+                body.put("elapsed", elapsed);
 
-            client.addResultForCase(runId, trID, body);
+                client.addResultForCase(runId, trID, body);
+
+
             } catch(Exception ex) {
                 //only log and do nothing else
                 logger.severe("Ran into exception " + ex.getMessage());
             }
+
         }
+        client.closePlan(planId);
     }
 
 

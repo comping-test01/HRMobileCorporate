@@ -46,15 +46,15 @@ public class TestRailClient {
     }
 
     public List<Plan> getPlans(int projectId, Map<String, String> filters)
-               throws IOException, APIException {
-           String url = "get_plans/" + projectId;
-           if (filters != null) {
-               for (Map.Entry<String, String> entry : filters.entrySet()) {
-                   url += "&" + entry.getKey() + "=" + entry.getValue();
-               }
-           }
-           return objectMapper.readValue(client.sendGet(url).toString(), new TypeReference<List<Plan>>(){});
-       }
+            throws IOException, APIException {
+        String url = "get_plans/" + projectId;
+        if (filters != null) {
+            for (Map.Entry<String, String> entry : filters.entrySet()) {
+                url += "&" + entry.getKey() + "=" + entry.getValue();
+            }
+        }
+        return objectMapper.readValue(client.sendGet(url).toString(), new TypeReference<List<Plan>>(){});
+    }
 
     public Plan addPlan(String projectId, String name, Integer milestoneId, Map<String, Object> body)
             throws IOException, APIException {
@@ -173,7 +173,7 @@ public class TestRailClient {
      * @throws APIException
      */
     public List<Map<String, Object>> getCasesAsMap(int projectId, int suiteId, int sectionId, Map<String, String> filters)
-                throws IOException, APIException {
+            throws IOException, APIException {
         String url = "get_cases/" + projectId;
         if (suiteId > 0) {
             url += "&suite_id=" + suiteId;
@@ -194,7 +194,7 @@ public class TestRailClient {
     }
 
 
-   // Sections
+    // Sections
 
     public Section addSection(int projectId, String name, int parentId, int suiteId)
             throws IOException, APIException {
@@ -264,6 +264,10 @@ public class TestRailClient {
 
     public Run updateRun(int runId, Map<String, Object> fields) throws IOException, APIException {
         return objectMapper.readValue(client.sendPost("update_run/" + runId, fields).toString(), Run.class);
+    }
+
+    public Run closeRun(int runId) throws IOException, APIException {
+        return objectMapper.readValue(client.sendPost("close_run/" + runId, "").toString(), Run.class);
     }
 
 
