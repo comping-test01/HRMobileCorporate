@@ -13,6 +13,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.NoSuchElementException;
@@ -67,6 +68,10 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@class='android.view.View' and ./*[@class='android.view.View' and ./*[@text='ic payment']]]")
     MobileElement paymentsMainMenu2;
 
+    @FindBy(xpath = "//*[@text='Računi'] | //*[@text='Accounts']")
+    MobileElement accountsMainMenu;
+
+
     @FindBy(xpath="//*[@text='Plaćanja u stranoj valuti']")
     MobileElement fxPaymentsSubItem;
 
@@ -107,14 +112,7 @@ public class HomePage extends BasePage {
         Utils.fluentWaitforElement(driver, changeCompanyButton, 10,2);
         changeCompanyButton.click();
     }
-    /*element = this.fluentWaitforElement(By.xpath("//*[@text='ic change comp Promijeni subjekt']"), 10, 2);
-                element.click();
-    */
 
-    public void doSelectPaymentMenu(){
-        paymentsMainMenu.click();
-
-    }
 
     public void doSelectpPaymentsOnFastAccess(){
         WebElement element;
@@ -137,22 +135,6 @@ public class HomePage extends BasePage {
         element = this.fluentWaitforElement(By.xpath("//*[@text='Plaćanje' and ./parent::*[@text='Plaćanje']]"), 10, 2);
         element.click();
     }
-
-//    public void doSelectPaymentAndPaymentSubItem(){
-//        iconicAppButton.click();
-//        runHomeMenu();
-//        Utils.fluentWaitforElement(driver, paymentsMainMenu);
-//        paymentsMainMenu.click();
-//
-//        /*List<WebElement> childs = paymentsSubMenu.findElements(By.xpath(".//*"));
-//        childs.get(0).click();
-//        System.out.println(childs.size());
-//        iconicAppButton.click();
-//        */
-//        paymentsSubItem.click();
-//        System.out.println("Plaćanja-plaćanje");
-//    }
-
 
 
     public void doSelectPaymentAndPaymentSubItem2(){
@@ -357,7 +339,7 @@ public class HomePage extends BasePage {
         }*/
     }
 
-    public void doSelectPaymentAndPaySomeone() throws InterruptedException {
+    public void doSelectPaymentAndPaySomeone(WebDriverWait wait) throws InterruptedException {
         Thread.sleep(1500);
         homeMenu.click();
         Thread.sleep(1500);
@@ -366,6 +348,7 @@ public class HomePage extends BasePage {
         paySomeonePaymentsSubItem.click();
         Thread.sleep(1500);
     }
+
     public void doSelectBeneficiaryList(){
         AndroidDriver driver2 = (AndroidDriver) driver;
         System.out.println("*************************** doSelectBeneficiaryList ***************************");
@@ -458,6 +441,13 @@ public class HomePage extends BasePage {
                 .perform();
 
     }
+
+    public void doSelectAccounts(WebDriverWait wait){
+        wait.until(ExpectedConditions.elementToBeClickable(homeMenu)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(accountsMainMenu)).click();
+    }
+
+
 
     public void pressQuickAccess(){
         Utils.fluentWaitforElement(driver, quickAccessButton, 10,2);

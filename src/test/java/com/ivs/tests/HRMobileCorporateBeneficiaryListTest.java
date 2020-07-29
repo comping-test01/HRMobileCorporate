@@ -90,7 +90,7 @@ public class HRMobileCorporateBeneficiaryListTest extends BaseTest {
             String pinNumber = "789987";
             beneficiaryListPage.deleteAddedBeneficiary(beneficiaryName,pinNumber, wait);
             identifierName = beneficiaryListPage.addBeneficiary(IBAN, beneficiaryName, wait);
-            homePage.doSelectPaymentAndPaySomeone();
+            homePage.doSelectPaymentAndPaySomeone(wait);
             PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
             paySomeonePage.checkBeneficiary(beneficiaryName, IBAN, identifierName, wait);
             arrInputParams[intBrojac][4] = "OK";
