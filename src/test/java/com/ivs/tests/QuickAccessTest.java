@@ -33,7 +33,7 @@ public class QuickAccessTest extends BaseTest {
     public Object[][] testData() {
 
         ExcelUtil objData = new ExcelUtil();
-        arrInputParams = objData.GetParameters("QuickAccessMobileInputParameters.xlsx","Input1",columns);
+        arrInputParams = objData.GetParameters("QuickAccessInputParameters.xlsx","Input1",columns);
         return arrInputParams;
     }
 

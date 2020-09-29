@@ -1,9 +1,6 @@
 package com.ivs.testrail;
 
-import org.testng.IConfigurationListener;
-import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
+import org.testng.*;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -12,7 +9,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-public class TestRailListener implements ITestListener, IConfigurationListener {
+public class TestRailListener implements ITestListener, IConfigurationListener, ISuiteListener {
 
     private Logger logger = Logger.getLogger(TestRailListener.class.getName());
     private TestRailReporter reporter;
@@ -21,6 +18,7 @@ public class TestRailListener implements ITestListener, IConfigurationListener {
     List<Map<String, Object>> testResultsList;
     String platform;
     String language;
+    String testRailEnabled;
 
     /**
      * Store the result associated with a failed configuration here. This can
@@ -76,17 +74,20 @@ public class TestRailListener implements ITestListener, IConfigurationListener {
             Map<String, String> moreInfo = new LinkedHashMap<String, String>();
             moreInfo.put("class", result.getMethod().getRealClass().getCanonicalName());
             moreInfo.put("method", result.getMethod().getMethodName());
-            Object[] obj = (Object[]) result.getParameters()[0];
+            //Object[] obj = (Object[]) result.getParameters()[0];
+            String obj =  result.getParameters()[2].toString();
 
             platform =  (String) result.getTestContext().getAttribute("platform");
             language = (String) result.getTestContext().getAttribute("language");
+            testRailEnabled = (String) result.getTestContext().getAttribute("testRailEnabled");
 
             props.put("platform", platform);
             props.put("language", language);
 
 
             if (result.getParameters() != null) {
-                moreInfo.put("parameters", Arrays.toString(obj));
+                //moreInfo.put("parameters", Arrays.toString(obj));
+                moreInfo.put("parameters", obj);
             }
             props.put("moreInfo", moreInfo);
             //reporter.reportResult(testRailIdsList, props);
@@ -104,28 +105,47 @@ public class TestRailListener implements ITestListener, IConfigurationListener {
     @Override
     public void onStart(ITestContext result)
     {
-
-        //System.out.println("On start Test:"+result.getName());
-
     }
 
     @Override
+    //on test class finish
     public void onFinish(ITestContext result)
     {
-        try {
-            reporter.reportResult(platform, language, testRailIdsList, testResultsList);
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (APIException e) {
-            throw new RuntimeException(e.getMessage());
+        if (testRailEnabled.equals("true")) {
+            try {
+                reporter.reportResult(platform, language, testRailIdsList, testResultsList);
+                testRailIdsList.clear();
+                testResultsList.clear();
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            } catch (APIException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
     @Override
+    public void onStart(ISuite suite)
+    {
+    }
+
+    @Override
+    public void onFinish(ISuite suite)
+    {
+        try {
+            reporter.closeCurrentPlan();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (APIException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result)
     {
-        //nothing here
     }
 
     // When Test case get failed, this method is called.
@@ -156,7 +176,6 @@ public class TestRailListener implements ITestListener, IConfigurationListener {
     @Override
     public void onTestSuccess(ITestResult result)
     {
-        //System.out.println("The name of the testcase passed is :"+result.getName());
         reportResult(result);
     }
 

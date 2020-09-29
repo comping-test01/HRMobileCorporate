@@ -1,0 +1,17 @@
+{
+  "loginValidPINTest": [
+    {
+      "rowID": "loginValidTest.01",
+      "description":"User can login to main page.",
+      "pin":"789987"
+    }
+  ],
+
+  "loginInvalidPINTest": [
+    {
+      "rowID": "loginInvalidTest.01",
+      "description":"User can't login - PIN is invalid.",
+      "pin":"999999"
+    }
+  ]
+}

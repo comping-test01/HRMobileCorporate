@@ -1,258 +1,295 @@
 package com.ivs.tests;
 
-
 import com.ivs.pages.*;
-import com.ivs.util.ExcelUtil;
-import com.ivs.util.Utils;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
-import com.ivs.pages.*;
+import com.ivs.testrail.TestRailCase;
+import com.ivs.util.JSONDataProvider;
+import org.json.simple.JSONObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.*;
-import org.testng.asserts.SoftAssert;
-
-import java.util.concurrent.TimeUnit;
+import org.testng.annotations.Test;
+import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 
 public class HRMobileCorporatePaySomeoneTest extends BaseTest {
 
 
-    private Object [][] arrInputParams;
-    private int intBrojac = 0;
-    String text;
+    String authNumber;
+    String refNumber;
+    String startBalance;
+    String endBalance;
 
+    BigDecimal startBalanceDouble;
+    BigDecimal endBalanceDouble;
+    BigDecimal amountInputDouble;
 
+    String payerNameInput;
+    String payerIBANInput;
+    String payeeNameInput;
+    String payeeIBANInput;
+    String amountInput;
+    String dateInput;
+    String debitRef1Input;
+    String debitRef2Input;
+    String creditRef1Input;
+    String creditRef2Input;
+    String paymentDescriptionInput;
 
-    @DataProvider(name = "testData")
-    public Object[][] testData() {
+    private void setInputParameters(JSONObject testData) {
+        authNumber = "";
+        refNumber = "";
+        expectedText = null;
+        startBalance = "";
+        endBalance= "";
 
-        ExcelUtil objData = new ExcelUtil();
-        arrInputParams = objData.GetParameters("PaySomeoneInputParameters.xlsx","Input1",16);
-        return arrInputParams;
+        startBalanceDouble = null;
+        endBalanceDouble = null;
+        amountInputDouble = null;
+        payerNameInput = setSingleParameter("payerNameInput", testData);
+        payerIBANInput = setSingleParameter("payerIBANInput", testData);
+        payeeNameInput = setSingleParameter("payeeNameInput", testData);
+        payeeIBANInput = setSingleParameter("payeeIBANInput", testData);
+        amountInput = setSingleParameter("amountInput", testData);
+        dateInput = setSingleParameter("dateInput", testData);
+        debitRef1Input = setSingleParameter("debitRef1Input", testData);
+        debitRef2Input = setSingleParameter("debitRef2Input", testData);
+        creditRef1Input = setSingleParameter("creditRef1Input", testData);
+        creditRef2Input = setSingleParameter("creditRef2Input", testData);
+        paymentDescriptionInput = setSingleParameter("paymentDescriptionInput", testData);
+
+        amountInput = (language.equals("en")) ? amountInput.replace(",", ".") : amountInput;
     }
 
-    @Test(dataProvider = "testData")
-    public void testPaySomeone(Object [] objInput) throws InterruptedException {
-        MobileElement element;
-        SoftAssert soft = new SoftAssert();
-        driver = pageGen.getDriver();
-        Utils utils = new Utils(driver);
-        String testType = objInput[0].toString();
-        String payerNameInput = objInput[1].toString();
-        String payerIBANInput = objInput[2].toString();
-        String payeeNameInput = objInput[3].toString();
-        String payeeIBANInput = objInput[4].toString();
-        String amountInput = objInput[5].toString();
-        String dateInput = objInput[6].toString();
-        String debitRef1Input = objInput[7].toString();
-        String debitRef2Input = objInput[8].toString();
-        String creditRef1Input = objInput[9].toString();
-        String creditRef2Input = objInput[10].toString();
-        String paymentDescriptionInput = objInput[11].toString();
+    @TestRailCase(testRailId = 12694)
+    @Test(groups={"PaySomeone"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void paySomeoneUploadTest(String rowID, String description, JSONObject testData) throws InterruptedException {
 
-
-
-        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-        LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = null;
+        setInputParameters(testData);
+        setResources();
 
         try {
-            loginPage.loginAndEnterPIN(applicationPIN,language);
-            homePage = new HomePage(driver);
+            loginToApplication(3);
+            HomePage homePage = new HomePage(driver);
+            homePage.verifyLoginSuccess();
 
-            //homePage.skipSettingMainCompany();
-
-            //slijedeće je odabir poslovnog subjekta ILI početna
-            String xpathString = "//*[@text='Početna'] | " +
-                                 "//*[@text='Odabir poslovnog subjekta' and @class='android.view.View']";
-
-            element = utils.fluentWaitforElement(By.xpath(xpathString), 60, 1);
-
-            if (isElementPresent(By.xpath("//*[@text='Odabir poslovnog subjekta' and @class='android.view.View']"), driver)) {
-                //homePage.runHomeMenu();
-                //homePage.doChangeCompanyClick();
-                ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
-                clientSelectPage.doSearchAndSelectClient(payerNameInput);
-            }
-
-            element = utils.fluentWaitforElement(By.xpath("//*[@text='Dobrodošli, ']"), 60, 2);
-            text = element.getText();
-            Assert.assertEquals(text, "Dobrodošli, ");
-            //Assert.assertNotNull(homePage.getHomePageHeader());
-
-            //provjera je li potrebna promjena subjekta //*[@text='APOLLO HR D.O.O.']
-
-            if (!(isElementPresent(By.xpath("//*[@text='" + payerNameInput + "' and @class='android.widget.TextView']"), driver))) {
-                System.out.println("Ponovni odabir poslovnog subjekta ...:" + payerNameInput);
-                homePage.runHomeMenu();
-                homePage.doChangeCompanyClick();
-                ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
-                clientSelectPage.doSearchAndSelectClient(payerNameInput);
-
-            }
-
-
-            homePage.doSelectPaymentAndPaymentSubItem2();
+            switchToWebView();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            AccountsPage accountsPage = new AccountsPage(driver);
+            String startBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            switchToWebView();
             PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
-
-            if (!paySomeonePage.checkIfOdaberiDrugiRacunExists()){
-                //ako ne postoji objekt, pokušavamo još jednom selektirati plaćanje
-                homePage.doSelectPaymentSubItem();
-                paySomeonePage = new PaySomeonePage(driver);
-            }
-
-
-            BeneficiaryListPage beneficiaryListPage = new BeneficiaryListPage(driver);
-
-            switch (testType.toUpperCase()) {
-                case "FROM BENEFICIARY":
-                   paySomeonePage.setPayerData(payerNameInput,payerIBANInput);
-                    paySomeonePage.showBeneficiaryList();
-                    beneficiaryListPage.doSearchAndSelectBeneficiary(payeeNameInput,payeeIBANInput);
-
-                    break;
-
-                default:
-                    paySomeonePage.setPayerData(payerNameInput,payerIBANInput);
-                    paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput);
-                    break;
-            }
-
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("ic-menu"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-PAYMENTS"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-NEW_KUNA_PAYMENT_ORDER"))).click();
+            wait.until(ExpectedConditions.textMatches(By.className("title-default"), Pattern.compile("Plaćanje")));
+            paySomeonePage.setPayerData(payerIBANInput);
+            paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput,amountInput);
             paySomeonePage.doFillPaySomeoneForm(amountInput,dateInput,debitRef1Input, debitRef2Input,creditRef1Input,creditRef2Input,paymentDescriptionInput);
-            paySomeonePage.doVerifyData();
+            paySomeonePage.doProceed();
+            paySomeonePage.doUpload();
 
-            //nextButton.click();
+            expectedText = "NALOG USPJEŠNO UČITAN I NALAZI SE U AUTORIZACIJI.!";
+            refNumber = paySomeonePage.getRefrenceID();
+            switchToWebView();
+            paySomeonePage.verifyPaymentResultMessage(expectedText);
 
-
-            String strBrojAutorizacije = "";
-            String referenceID = "";
-            String strExpectedText = "";
-
-            //System.out.println("Test type je: " + testType);
-
-            switch (testType.toUpperCase()) {
-                case "AUTHORIZE&SEND":
-                case "FROM BENEFICIARY":
-                    paySomeonePage.doAuthorizeAndSend(applicationPIN);
-                    strExpectedText = "NALOG USPJEŠNO POSLAN NA IZVRŠENJE. MOLIMO PROVJERITE STATUS U LISTI NALOGA.!";
-                    strBrojAutorizacije = paySomeonePage.getAuthorizationID();
-                    paySomeonePage.verifyPaymentResultMessage(strExpectedText);
-                    referenceID = paySomeonePage.getRefrenceID();
-                    paySomeonePage.finishPaySomeone();
-                    break;
-
-                case "AUTHORIZE":
-                    paySomeonePage.doAuthorize();
-                    strExpectedText = "NALOG USPJEŠNO POSLAN I AUTORIZIRAN TE SE NALAZI U AUTORIZACIJI.!";
-                    loginPage.enterPIN(applicationPIN);
-                    paySomeonePage.verifyPaymentResultMessage(strExpectedText);
-                    strBrojAutorizacije = paySomeonePage.getAuthorizationID();
-                    referenceID = paySomeonePage.getRefrenceID();
-                    paySomeonePage.finishPaySomeone();
-                    break;
-
-                case "SAVE":
-                    paySomeonePage.doSaveForLater();
-                    strExpectedText = "NALOG USPJEŠNO SPREMLJEN I NALAZI SE U LISTI NALOGA, U PRIPREMI.!";
-                    paySomeonePage.verifyPaymentResultMessage(strExpectedText);
-                    paySomeonePage.finishPaySomeone();
-                    break;
-
-                case "LOAD":
-                    paySomeonePage.doUpload();
-                    strExpectedText = "NALOG USPJEŠNO UČITAN I NALAZI SE U AUTORIZACIJI.!";
-                    paySomeonePage.verifyPaymentResultMessage(strExpectedText);
-                    referenceID = paySomeonePage.getRefrenceID();
-                    paySomeonePage.finishPaySomeone();
-                    break;
-
-                case "OFF LIMITS":
-                    paySomeonePage.verifyOffLimitsMessage("Iskorišten dnevni limit.");
-                    //if (blnResult==false){
-                    //    throw new Exception("Nije pronađena poruka za off limits. Provjerite je li iznos > 500000!");
-                    //}
-                    break;
-
-                case "FOREIGN ACCOUNT":
-                    strExpectedText = "NEISPRAVAN UNOS PODATAKA. MOLIMO UNESITE OVAJ TIP NALOGA KROZ PLAĆANJA U STRANOJ VALUTI.";
-                    paySomeonePage.verifyForForeignAccountTopScreenErorMessage(strExpectedText);
-                    break;
-                default:
-                    throw new Exception("Invalid test type (" + testType + ") in input excel (row: " + (intBrojac + 1) + ") !");
-            }
-
-            System.out.println("BrojAutorizacije = " + strBrojAutorizacije);
-            System.out.println("ReferenceID = " + referenceID);
-
-            arrInputParams[intBrojac][12] = "OK";
-            arrInputParams[intBrojac][13] = "'" + strBrojAutorizacije;
-            arrInputParams[intBrojac][14] = "'" + referenceID;
-            arrInputParams[intBrojac][15] = "";
-
-            intBrojac++;
-            soft.assertTrue(true);
-            soft.assertAll();
-
+            String endBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            Assert.assertEquals(startBalance,endBalance,"For paysomeone - upload - account start balance should match end balance.");
 
         } catch (Exception e) {
-
-            arrInputParams[intBrojac][12] = "NOK";
-            arrInputParams[intBrojac][13] = "";
-            arrInputParams[intBrojac][14] = "";
-            arrInputParams[intBrojac][15] = e.toString();
+            Assert.fail("Exception in test:" + e.getMessage());
             e.printStackTrace();
 
 
-            homePage.doLogOut();
-
-            intBrojac++;
-            soft.assertTrue(false);
-            soft.assertAll();
         }
 
 
     }
 
+    @TestRailCase(testRailId = 12695)
+    @Test(groups={"PaySomeone"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void paySomeoneAuthorizeTest(String rowID, String description, JSONObject testData) throws InterruptedException {
+
+        setInputParameters(testData);
+        setResources();
+
+        try {
+            loginToApplication(3);
+            HomePage homePage = new HomePage(driver);
+            homePage.verifyLoginSuccess();
+            //setUpCompany(homePage, payerNameInput);
+
+            switchToWebView();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            AccountsPage accountsPage = new AccountsPage(driver);
+            String startBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            switchToWebView();
+            PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("ic-menu"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-PAYMENTS"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-NEW_KUNA_PAYMENT_ORDER"))).click();
+            wait.until(ExpectedConditions.textMatches(By.className("title-default"), Pattern.compile("Plaćanje")));
+            paySomeonePage.setPayerData(payerIBANInput);
+            paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput,amountInput);
+            paySomeonePage.doFillPaySomeoneForm(amountInput,dateInput,debitRef1Input, debitRef2Input,creditRef1Input,creditRef2Input,paymentDescriptionInput);
+            paySomeonePage.doProceed();
+            paySomeonePage.doAuthorize();
+            LoginPage loginPage = new LoginPage(driver);
+            loginPage.enterPIN(applicationPIN);
+
+            expectedText = "NALOG USPJEŠNO POSLAN I AUTORIZIRAN TE SE NALAZI U AUTORIZACIJI.!";
+            refNumber = paySomeonePage.getRefrenceID();
+            authNumber = paySomeonePage.getAuthorizationID();
+            switchToWebView();
+            paySomeonePage.verifyPaymentResultMessage(expectedText);
+
+            String endBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            Assert.assertEquals(startBalance,endBalance,"For paysomeone - authorize - account start balance should match end balance.");
+
+        } catch (Exception e) {
+            Assert.fail("Exception in test:" + e.getMessage());
+            e.printStackTrace();
 
 
-    @AfterSuite
-    public void closeOut() {
-        WebElement element;
-
-        ExcelUtil objData = new ExcelUtil();
-         objData.SaveParameters("PaySomeoneInputParameters.xlsx","Input1",arrInputParams,16,4,"android");
-
-        /*
-        if (isElementPresent(By.xpath("//*[@text='ios-ic-closex']"),driver)){
-            ////*[@text='ios-ic-closex']
-            driver.findElement(By.xpath("//*[@text='ios-ic-closex']")).click();
         }
-        driver.findElement(By.xpath("//*[@text='Ionic App']")).click();
-        driver.findElement(By.xpath("//*[@text='ic menu']")).click();
 
-        //element = Utils.fluentWaitforElement(By.xpath("//*[@text='Početna']"), 20, 2);
-        //element.click();
 
-        if (isElementPresent(By.xpath("//*[@text='ic logout']"),driver)){
-            ////*[@text='ios-ic-closex']
-            driver.findElement(By.xpath("//*[@text='ic logout']")).click();
-        }
-    */
-    //    driver.close();
-        driver.quit();
     }
 
+    @TestRailCase(testRailId = 12693)
+    @Test(groups={"PaySomeone"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void paySomeoneSaveTest(String rowID, String description, JSONObject testData) throws InterruptedException {
+
+        setInputParameters(testData);
+        setResources();
+
+        try {
+            loginToApplication(3);
+            HomePage homePage = new HomePage(driver);
+            homePage.verifyLoginSuccess();
+
+            switchToWebView();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            AccountsPage accountsPage = new AccountsPage(driver);
+            String startBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            switchToWebView();
+            PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("ic-menu"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-PAYMENTS"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-NEW_KUNA_PAYMENT_ORDER"))).click();
+            wait.until(ExpectedConditions.textMatches(By.className("title-default"), Pattern.compile("Plaćanje")));
+            paySomeonePage.setPayerData(payerIBANInput);
+            paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput,amountInput);
+            paySomeonePage.doFillPaySomeoneForm(amountInput,dateInput,debitRef1Input, debitRef2Input,creditRef1Input,creditRef2Input,paymentDescriptionInput);
+            paySomeonePage.doProceed();
+            paySomeonePage.doSave();
+
+            expectedText = "NALOG USPJEŠNO SPREMLJEN I NALAZI SE U LISTI NALOGA, U PRIPREMI.!";
+            switchToWebView();
+            paySomeonePage.verifyPaymentResultMessage(expectedText);
+
+            String endBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            Assert.assertEquals(startBalance,endBalance,"For paysomeone - save - account start balance should match end balance.");
+
+        } catch (Exception e) {
+            Assert.fail("Exception in test:" + e.getMessage());
+            e.printStackTrace();
 
 
+        }
 
 
-    static boolean isElementPresent(By by, AppiumDriver d)
-    {
-        d.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        boolean exists = d.findElements(by).size() != 0;
-        d.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-        return exists;
     }
+
+    @TestRailCase(testRailId = 12698)
+    @Test(groups={"PaySomeone"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void paySomeoneOffLimitsTest(String rowID, String description, JSONObject testData) throws InterruptedException {
+
+        setInputParameters(testData);
+        setResources();
+
+        try {
+            loginToApplication(3);
+            HomePage homePage = new HomePage(driver);
+            homePage.verifyLoginSuccess();
+
+            switchToWebView();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            AccountsPage accountsPage = new AccountsPage(driver);
+            String startBalance = accountsPage.checkAccountBalance(payerIBANInput);
+
+            switchToWebView();
+            PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("ic-menu"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-PAYMENTS"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-NEW_KUNA_PAYMENT_ORDER"))).click();
+            wait.until(ExpectedConditions.textMatches(By.className("title-default"), Pattern.compile("Plaćanje")));
+            paySomeonePage.setPayerData(payerIBANInput);
+            paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput,amountInput);
+            paySomeonePage.doFillPaySomeoneForm(amountInput,dateInput,debitRef1Input, debitRef2Input,creditRef1Input,creditRef2Input,paymentDescriptionInput);
+            paySomeonePage.doProceed();
+
+            expectedText = "Iskorišten dnevni limit.";
+            paySomeonePage.verifyErrorMessage(expectedText);
+            switchToWebView();
+
+            String endBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            Assert.assertEquals(startBalance,endBalance,"For paysomeone - off limits - account start balance should match end balance.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("Exception in test:" + e.getMessage());
+        }
+
+
+    }
+
+    @TestRailCase(testRailId = 13109)
+    @Test(groups={"PaySomeone"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void paySomeoneForeignAccountTest(String rowID, String description, JSONObject testData) throws InterruptedException {
+
+        setInputParameters(testData);
+        setResources();
+
+        try {
+            loginToApplication(3);
+            HomePage homePage = new HomePage(driver);
+            homePage.verifyLoginSuccess();
+
+            switchToWebView();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            AccountsPage accountsPage = new AccountsPage(driver);
+            String startBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            switchToWebView();
+            PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("ic-menu"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-PAYMENTS"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-item-NEW_KUNA_PAYMENT_ORDER"))).click();
+            wait.until(ExpectedConditions.textMatches(By.className("title-default"), Pattern.compile("Plaćanje")));
+            paySomeonePage.setPayerData(payerIBANInput);
+            paySomeonePage.setPayeeData(payeeNameInput,payeeIBANInput,amountInput);
+            paySomeonePage.doFillPaySomeoneForm(amountInput,dateInput,debitRef1Input, debitRef2Input,creditRef1Input,creditRef2Input,paymentDescriptionInput);
+            paySomeonePage.doProceed();
+
+
+            expectedText = "Neispravan unos podataka. Molimo unesite ovaj tip naloga kroz Plaćanja u stranoj valuti.";
+            paySomeonePage.verifyErrorMessage(expectedText);
+            switchToWebView();
+
+            String endBalance = accountsPage.checkAccountBalance(payerIBANInput);
+            Assert.assertEquals(startBalance,endBalance,"For paysomeone - foreign account - account start balance should match end balance.");
+
+
+        } catch (Exception e) {
+            Assert.fail("Exception in test:" + e.getMessage());
+            e.printStackTrace();
+
+
+        }
+
+
+    }
+
 }

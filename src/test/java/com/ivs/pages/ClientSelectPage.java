@@ -37,9 +37,6 @@ public class ClientSelectPage extends BasePage {
         clientSearch.click();
         clientSearch.sendKeys(clientName);
         confirmClientSelect.click();
-        //WebElement element = utils.fluentWaitforElement(By.xpath("//*[@text='" + clientName + "']"), 30, 2);
-        //String text = element.getText();
-        //Assert.assertEquals(text, clientName, "Promjena subjekta uspjela!");
 
     }
 

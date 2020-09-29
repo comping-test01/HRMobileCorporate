@@ -1,0 +1,161 @@
+{
+  "paySomeoneUploadTest": [
+    {
+      "rowID": "paySomeoneUploadTest.01",
+      "description":"Pay Someone - Upload",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "5,55",
+      "dateInput": "26.3.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "00",
+      "creditRef2Input": "10840749604-00000-00",
+      "paymentDescriptionInput": "Plaćanje 5,55KN"
+    }
+  ],
+
+  "paySomeoneSaveTest": [
+    {
+      "rowID": "paySomeoneSaveTest.01",
+      "description":"Pay Someone - Save",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "5,55",
+      "dateInput": "26.9.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Plaćanje 5,55KN"
+    }
+  ],
+
+  "paySomeoneAuthorizeTest": [
+    {
+      "rowID": "paySomeoneAuthorizeTest.01",
+      "description":"Pay Someone - Authorize",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "0,25",
+      "dateInput": "26.9.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - authorize - 0,25KN"
+    }
+  ],
+
+  "paySomeoneAuthorizeAndSendTest": [
+    {
+      "rowID": "paySomeoneAuthorizeAndSendTest.01",
+      "description":"Pay Someone - AuthorizeAndSend",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "0,25",
+      "dateInput": "26.3.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - authorize - 0,25KN"
+    }
+  ],
+
+  "paySomeoneForeignAccountTest": [
+    {
+      "rowID": "paySomeoneForeignAccountTest.01",
+      "description":"Pay Someone - ForeignAccount",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"TESTCOMPING",
+      "payeeIBANInput": "SI56101000044596812",
+      "amountInput": "0,25",
+      "dateInput": "26.3.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - ForeignAccount - 10,22KN"
+    }
+  ],
+  "paySomeoneOffLimitsTest": [
+    {
+      "rowID": "paySomeoneOffLimitsTest.01",
+      "description":"Pay Someone - OffLimits",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"TESTCOMPING",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "6000001,23",
+      "dateInput": "26.9.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - OffLimits - 6000001,23KN"
+    }
+  ],
+  "paySomeoneFromBeneficiaryTest": [
+    {
+      "rowID": "paySomeoneFromBeneficiaryTest.01",
+      "description":"Pay Someone - FromBeneficiary",
+      "payerNameInput":"EMBASSY OF JAPAN ACCOUNT A",
+      "payerIBANInput": "HR5023400091170010419",
+      "payeeNameInput":"TESTCOMPING",
+      "payeeIBANInput": "HR2823400091170010427",
+      "amountInput": "0,25",
+      "dateInput": "26.3.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - FromBeneficiary - 0,25KN"
+    }
+  ],
+  "paySomeoneFromTemplatesTest": [
+    {
+      "rowID": "paySomeoneFromTemplatesTemplatesTest.01",
+      "description":"Pay Someone - FromBeneficiary",
+      "payerNameInput":"INA INDUSTRIJA NAFTE D.D.",
+      "payerIBANInput": "HR9223400091100022902",
+      "payeeNameInput":"HR3223600003224723957",
+      "payeeIBANInput": "HR3223600003224723957",
+      "amountInput": "1.50",
+      "dateInput": "26.3.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - FromBeneficiary - 0,25KN"
+    }
+  ],
+  "paySomeoneFutureUploadTest": [
+    {
+      "rowID": "paySomeoneFromTemplatesTemplatesTest.01",
+      "description":"Pay Someone - FromBeneficiary",
+      "payerNameInput":"INA INDUSTRIJA NAFTE D.D.",
+      "payerIBANInput": "HR9223400091100022902",
+      "payeeNameInput":"HR3223600003224723957",
+      "payeeIBANInput": "HR3223600003224723957",
+      "amountInput": "150,00",
+      "dateInput": "30.09.2020",
+      "debitRef1Input": "00",
+      "debitRef2Input": "10840749604-00000-00",
+      "creditRef1Input": "",
+      "creditRef2Input": "",
+      "paymentDescriptionInput": "Pay Someone - FromFuture - 0,25KN"
+    }
+  ]
+}
+
+

@@ -2,11 +2,15 @@ package com.ivs.testrail;
 
 import com.google.common.collect.Lists;
 import com.ivs.testrail.dto.Plan;
-
+import com.ivs.testrail.dto.PlanEntry;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -18,8 +22,9 @@ import java.util.logging.Logger;
  */
 public class TestRailReporter {
 
-    private Logger logger = Logger.getLogger(TestRailReporter.class.getName());
+    private Logger logger = Logger.getLogger(com.ivs.testrail.TestRailReporter.class.getName());
     private TestRailClient client;
+    private Plan plan;
     private Boolean enabled;
     //keys for the properties map that is used to pass test information into this reporter
     public static final String TEST_RAIL_CASE_ID = "trID";
@@ -42,6 +47,9 @@ public class TestRailReporter {
             trProperties = loadProperties();
             String enabled = trProperties.getProperty("enabled");
             Boolean trnabled = enabled == null ? false : true;
+            plan = new Plan();
+            plan.id = 0;
+
 
             if (!trnabled) {
                 logger.info("TestRail listener is not enabled. Results will not be reported to TestRail.");
@@ -55,7 +63,7 @@ public class TestRailReporter {
     }
 
 
-    public int createPlanAndRun(String browser, String language, List<Integer> caseIds){
+    public int createPlanAndRun(String platform, String language, List<Integer> caseIds){
         int planId = 0;
 
         try {
@@ -67,10 +75,25 @@ public class TestRailReporter {
             String projectId = trProperties.getProperty("testrailProjectId");
             String bankName = trProperties.getProperty("testrailBankName");
 
-            String planName = planTime + " - " + bankName.toUpperCase() + " - automation";
-            String runName = runTime + " - " + browser.toUpperCase() + " - automation";;
+            boolean testRailProxyIsEnabled = Boolean.valueOf(trProperties.getProperty("testRailProxyIsEnabled"));
+            String testRailProxyHost = trProperties.getProperty("testRailProxyHost");
+            int testRailProxyPort = Integer.valueOf(trProperties.getProperty("testRailProxyPort"));
+            String testRailProxyUsername = trProperties.getProperty("testRailProxyUsername");
+            String testRailProxyPassword = trProperties.getProperty("testRailProxyPassword");
 
-            client = new TestRailClient(url,username,password);
+            String planName = planTime + " - " + bankName.toUpperCase() + " - automation";
+            String runName = runTime + " - " + platform.toUpperCase() + " - " + language.toUpperCase() +" - automation";
+
+            client = new TestRailClient(
+                    url,
+                    username,
+                    password,
+                    testRailProxyIsEnabled,
+                    testRailProxyHost,
+                    testRailProxyPort,
+                    testRailProxyUsername,
+                    testRailProxyPassword
+            );
 
             Map<String, Object> runProps = new HashMap<String, Object>();
             runProps.put("include_all",false);
@@ -78,20 +101,36 @@ public class TestRailReporter {
             runProps.put("suite_id",suiteId);
             runProps.put("case_ids", caseIds);
 
+
             Map<String, Object> planEntryProps = new HashMap<String, Object>();
             planEntryProps.put("name",runName);
             planEntryProps.put("suite_id",suiteId);
             planEntryProps.put("include_all",false);
             planEntryProps.put("case_ids", caseIds);
-            planEntryProps.put("runs", Lists.newArrayList(runProps));
 
+            planEntryProps.put("runs", Lists.newArrayList(runProps));
             Map<String, Object> planprops = new HashMap<String, Object>();
             planprops.put("name",planName);
             planprops.put("entries",Lists.newArrayList(planEntryProps));
-            Plan plan = client.addPlan(projectId, planName,null, planprops);
-            runId = plan.entries.get(0).runs.get(0).id;
 
-            planId = plan.id;
+
+            if (plan.id==0) {
+                System.out.println("New plan created!");
+                plan = client.addPlan(projectId, planName, null, planprops);
+
+                plan.id = plan.id;
+                runId = plan.entries.get(0).runs.get(0).id;
+
+
+            } else{
+                System.out.println("Adding entry...");
+                PlanEntry pe = client.addPlanEntry(plan.id, 39, planEntryProps);
+                runId = pe.runs.get(0).id;
+
+            }
+
+            System.out.println("Plan.id: " + plan.id);
+            System.out.println("Run.id: " + runId);
 
         }   catch(Exception e)  {
 
@@ -107,9 +146,9 @@ public class TestRailReporter {
      * @param testResultsList - list of test results
      */
 
-    public void reportResult(String browser, String language, List<Integer> caseIds, List<Map<String, Object>> testResultsList) throws IOException, APIException {
+    public void reportResult(String platform, String language, List<Integer> caseIds, List<Map<String, Object>> testResultsList) throws IOException, APIException{
 
-        int planId = createPlanAndRun(browser, language, caseIds);
+        int planId = createPlanAndRun(platform, language, caseIds);
 
         for (Map<String, Object> testResult : testResultsList) {
             int trID = (Integer)testResult.get(TEST_RAIL_CASE_ID);
@@ -159,7 +198,12 @@ public class TestRailReporter {
             }
 
         }
-        client.closePlan(planId);
+        // client.closePlan(planId);
+    }
+
+    public void closeCurrentPlan() throws IOException, APIException {
+        System.out.println("Closing plan with id: "+ plan.id);
+        client.closePlan(this.plan.id);
     }
 
 

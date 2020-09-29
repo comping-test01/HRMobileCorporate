@@ -27,8 +27,24 @@ public class TestRailClient {
      * @param username
      * @param password
      */
-    public TestRailClient(String url, String username, String password) {
-        client = new APIClient(url);
+    public TestRailClient(
+            String url,
+            String username,
+            String password,
+            boolean testRailProxyIsEnabled,
+            String testRailProxyHost,
+            int testRailProxyPort,
+            String testRailProxyUsername,
+            String testRailProxyPassword
+    ) {
+        client = new APIClient(
+                url,
+                testRailProxyIsEnabled,
+                testRailProxyHost,
+                testRailProxyPort,
+                testRailProxyUsername,
+                testRailProxyPassword
+        );
         client.setUser(username);
         client.setPassword(password);
         objectMapper = new ObjectMapper();
@@ -36,6 +52,7 @@ public class TestRailClient {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
+
 
 
 

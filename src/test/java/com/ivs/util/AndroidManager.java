@@ -1,9 +1,11 @@
 package com.ivs.util;
 
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -35,7 +37,6 @@ public class AndroidManager extends DriverManager {
 //            //capabilities.setCapability("platformVersion", "8.0.0");
 //
 //
-//
 //            //driver = new AndroidDriver<>(new URL("http://localhost:4723/wd/hub"), capabilities);
 //            driver = new AndroidDriver<>(new URL(appiumServer), capabilities);
             capabilities = new DesiredCapabilities();
@@ -52,21 +53,11 @@ public class AndroidManager extends DriverManager {
             capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, ".MainActivity");
             capabilities.setCapability(MobileCapabilityType.NO_RESET, true);
             capabilities.setCapability("automationName","UiAutomator2");
-            //capabilities.setCapability("skipDeviceInitialization", true);
-            //capabilities.setCapability("skipServerInstallation", true);
 
-
-
-
-
-            //deviceName":"192.168.5.19:5555","deviceUDID":"192.168.5.19:5555"
-            //capabilities.setCapability("udid", "39V7N19109011053");
             capabilities.setCapability("platformName", "ANDROID");
+            capabilities.setCapability("appium:chromeOptions", ImmutableMap.of("w3c", false));
 
             //capabilities.setCapability("udid", "39V7N19109011053"); //upisuje se ili udid mobitela ili IP adresa ako je spojen preko wifi-ja
-            //capabilities.setCapability("udid", "192.168.5.19:5555");
-            //capabilities.setCapability("platformVersion", "8.0.0");*/
-
 
             //driver = new AndroidDriver<>(new URL("http://localhost:4444/wd/hub"), capabilities);
             //driver = new AndroidDriver<>(new URL(appiumServer), capabilities);
@@ -79,9 +70,7 @@ public class AndroidManager extends DriverManager {
 
 
     public  void startService() {
-        //boolean flag=   checkIfServerIsRunnning(4723);
-        //if(!flag)
-        //{
+
         int port = 4723;
         URL appiumServerURL;
 

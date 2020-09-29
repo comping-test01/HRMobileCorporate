@@ -72,6 +72,10 @@ public class LoginPage extends BasePage {
     @FindBy(xpath="//*[@text='menu']")
     MobileElement homeMenu;
 
+    @FindBy(xpath = "//*[@text='Neispravan PIN. Pokušaj: 1/3'] | //*[@text='Incorrect PIN. Attempt: 1/3']")
+    WebElement wrongPINTxt;
+
+
     //*********Page Methods*********
 
     public void loginAndEnterPIN(String strPIN, String language) throws InterruptedException {
@@ -127,14 +131,7 @@ public class LoginPage extends BasePage {
     // Verify Wrong credentials
     public boolean verifyWrongCredentials() {
         try {
-
-            /*wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(
-                            By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']")));
-            driver.findElement(By.xpath("//*[@text='Neispravan PIN. Pokušaj: 1/3']"));
-            */
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("textViewError")));
-            driver.findElement(By.id("textViewError"));
+            wait.until(ExpectedConditions.visibilityOf(wrongPINTxt));
             return true;
 
         } catch (NoSuchElementException e) {

@@ -9,10 +9,12 @@ import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.NoSuchElementException;
@@ -53,6 +55,10 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@text='Preskoči']")
     MobileElement setMainCompanyButton;
 
+
+    @FindBy(xpath="((((//*[@class='android.view.View' and ./parent::*[@class='android.view.View' and ./parent::*[@id='content-wrapper']]]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[2]/*[@class='android.view.View'])[1]/*[@class='android.widget.TextView'])[1]")
+    WebElement pageWelcomeText;
+
     //Plaćanja/Plaćanje
 
     //*[@class='android.view.View' and ./*[@class='android.view.View' and ./*[@text='ic payment']]]
@@ -70,7 +76,8 @@ public class HomePage extends BasePage {
     @FindBy(xpath="//*[@text='Plaćanja u stranoj valuti']")
     MobileElement fxPaymentsSubItem;
 
-    @FindBy(xpath="//*[@text='Beneficiary list'] | //*[@text='Primatelji i predlošci']")
+    //@FindBy(xpath="//*[@text='Beneficiary list'] | //*[@text='Primatelji i predlošci']")
+    @FindBy(xpath = "//android.view.View[contains(text(),'Primatelji')]")
     MobileElement beneficiaryListPaymentsSubItem;
 
     @FindBy(xpath = "//*[@text='Pay someone'] | //*[@text='Plaćanje']")
@@ -102,14 +109,20 @@ public class HomePage extends BasePage {
         homeMenu.click();
     }
 
-    public void doChangeCompanyClick(){
+    public void doChangeCompany(String payerName){
+        String payerNameInput = "null";
+    }
 
-        Utils.fluentWaitforElement(driver, changeCompanyButton, 10,2);
+    public String checkCurrentLegalEntity(){
+
+        String legalEntityName = null;
+        return legalEntityName;
+    }
+
+    public void doChangeCompanyClick() {
+        Utils.fluentWaitforElement(driver, changeCompanyButton, 10, 2);
         changeCompanyButton.click();
     }
-    /*element = this.fluentWaitforElement(By.xpath("//*[@text='ic change comp Promijeni subjekt']"), 10, 2);
-                element.click();
-    */
 
     public void doSelectPaymentMenu(){
         paymentsMainMenu.click();
@@ -322,10 +335,14 @@ public class HomePage extends BasePage {
         } catch(InterruptedException e) {
             System.out.println("got interrupted!");
         }
+
+
         runHomeMenu();
         //wait.until(ExpectedConditions.visibilityOf(paymentsMainMenu));
         paymentsMainMenu.click();
         //tapOnElement(paymentsMainMenu);
+
+        //tapOnElement(driver.findElement(By.xpath("//android.view.View[contains(text(),'Primatelji')]")));
         beneficiaryListPaymentsSubItem.click();
         /*try {
             Thread.sleep(500);
@@ -490,12 +507,14 @@ public class HomePage extends BasePage {
 
     }
 
-    public void skipSettingMainCompany(){
-        boolean exists = fluentWaitforElement(setMainCompanyButton,20,2);
-        if (exists){
-            setMainCompanyButton.click();
-        }
+    public String getWelcomeText(){
+        try {
+            wait.until(ExpectedConditions.visibilityOf(pageWelcomeText));
+            //fluentWaitforElement(pageWelcomeText, 10, 1);
+        } catch (StaleElementReferenceException e){ }
+        return pageWelcomeText.getText();
     }
+
     public boolean verifyLoginSuccess() {
         try {
             wait.until(ExpectedConditions.visibilityOf(homeMenu));

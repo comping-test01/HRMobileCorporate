@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Selenium Corporate Responsive" >
+    <!--
+    <suite name="Selenium Corporate Responsive" thread-count="2" parallel="classes" >
+        -->
+    <listeners>
+        <listener class-name="com.ivs.testrail.TestRailListener"/>
+    </listeners>
+    <test name="AndroidTest-HR">
+        <parameter name="browser" value="Android" />
+        <parameter name="language" value="hr" />
+        <parameter name="headlessRun" value="true" />
+        <parameter name="testRailEnabled" value="true" />
+        <classes>
+            <class name="com.ivs.tests.HRMobileCorporateLoginTest"></class>
+            <class name="com.ivs.tests.HRMobileCorporatePaySomeoneTest"></class>
+        </classes>
+    </test>
+    <test name="AndroidTest-EN">
+        <parameter name="platform" value="Android" />
+        <parameter name="language" value="hr" />
+        <parameter name="headlessRun" value="true" />
+        <parameter name="testRailEnabled" value="true" />
+        <classes>
+            <class name="com.ivs.tests.HRMobileCorporateLoginTest"></class>
+            <class name="com.ivs.tests.HRMobileCorporatePaySomeoneTest"></class>
+        </classes>
+    </test>
+</suite>

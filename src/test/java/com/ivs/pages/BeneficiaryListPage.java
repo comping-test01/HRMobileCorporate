@@ -6,6 +6,7 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
-public class BeneficiaryListPage extends BasePage{
+public class BeneficiaryListPage extends BasePage {
 
     public BeneficiaryListPage(AppiumDriver<MobileElement> driver) {
         super(driver);
@@ -30,7 +31,7 @@ public class BeneficiaryListPage extends BasePage{
     MobileElement beneficiaryNameSelectRadioBtn;
 
     @FindBy(xpath = "//*[@text='NOVI PRIMATELJ'] | //*[@text='NEW BENEFICIARY'] | //*[@class='android.widget.Button' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text]]]")
-    MobileElement newBeneficiary;
+    WebElement newBeneficiary;
 
     @FindBy(xpath = "//*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Ime korisnika*']]] | //*[@class='android.widget.EditText' and ./parent::*[(./preceding-sibling::* | ./following-sibling::*)[@text='Beneficiary Name*']]]")
     MobileElement nameInput;
@@ -103,10 +104,10 @@ public class BeneficiaryListPage extends BasePage{
 
     public String addBeneficiary(String iban, String beneficiaryName, WebDriverWait wait) throws InterruptedException {
         //WebDriverWait wait = new WebDriverWait(driver, 10);
-        Thread.sleep(500);
+        //Thread.sleep(500);
         wait.until(ExpectedConditions.elementToBeClickable(newBeneficiary)).click();
 
-        Thread.sleep(500);
+        //Thread.sleep(500);
         wait.until(ExpectedConditions.elementToBeClickable(addIdentifier)).click();
 
         wait.until(ExpectedConditions.elementToBeClickable(IBANInput)).click();

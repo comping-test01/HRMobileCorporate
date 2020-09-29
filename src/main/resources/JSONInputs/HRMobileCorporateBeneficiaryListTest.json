@@ -1,0 +1,22 @@
+{
+  "beneficiaryListNewBeneficiaryTest": [
+    {
+      "rowID": "beneficiaryListNewBeneficiaryTest.01",
+      "description":"New beneficiary",
+      "legalEntityNameInput":"GENERALI OSIGURANJE D.D.",
+      "identifierNameInput": "HR1023400091170013273",
+      "beneficiaryNameInput": "Marko Horvat",
+      "beneficiaryIBANInput": "Martićeva 17"
+    },
+    {
+      "rowID": "beneficiaryListNewBeneficiaryTest.02",
+      "description":"New beneficiary",
+      "legalEntityNameInput":"GENERALI OSIGURANJE D.D.",
+      "identifierNameInput": "HR1023400091170013273",
+      "beneficiaryNameInput": "Marko Horvat",
+      "beneficiaryIBANInput": "Martićeva 17"
+    }
+  ]
+
+
+}

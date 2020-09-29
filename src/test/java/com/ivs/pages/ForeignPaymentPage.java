@@ -126,7 +126,7 @@ public class ForeignPaymentPage extends BasePage {
 
 
 
-    public void setPayeeData(String strPayeeIBAN, String strPayeeName){
+    public void setPayeeData(String strPayeeIBAN){
         try {
 
             MobileElement element;
@@ -136,9 +136,9 @@ public class ForeignPaymentPage extends BasePage {
             payeeIBANvalidateButton.click();
             Thread.sleep(2000);
             //System.out.println("Payee name: " + payeeName.getAttribute("text").toString());
-            if (payeeName.getAttribute("text").length() == 0){
-                payeeName.sendKeys(strPayeeName);
-            }
+           // if (payeeName.getAttribute("text").length() == 0){
+          //      payeeName.sendKeys(strPayeeName);
+           //8 }
             //wait.until((ExpectedCondition<Boolean>) driver -> payeeName.getAttribute("text").length() != 0);
 
 

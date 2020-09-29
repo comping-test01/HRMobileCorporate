@@ -18,6 +18,7 @@ import org.json.simple.JSONValue;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Base64;
 
@@ -27,8 +28,16 @@ public class APIClient
   private String m_user;
   private String m_password;
   private String m_url;
+  private Proxy proxy = null;
 
-  public APIClient(String base_url)
+  public APIClient(
+          String base_url,
+          boolean testRailProxyIsEnabled,
+          String testRailProxyHost,
+          int testRailProxyPort,
+          String testRailProxyUsername,
+          String testRailProxyPassword
+  )
   {
     if (!base_url.endsWith("/"))
     {
@@ -36,6 +45,15 @@ public class APIClient
     }
 
     this.m_url = base_url + "index.php?/api/v2/";
+
+    if(testRailProxyIsEnabled) {
+      this.proxy = ProxyUtils.of(
+              testRailProxyHost,
+              testRailProxyPort,
+              testRailProxyUsername,
+              testRailProxyPassword
+      );
+    }
   }
 
   /**

@@ -41,12 +41,12 @@ public class mobileFXPaymentCorporateTest extends BaseTest {
         String testType = objInput[0].toString();
         String payerNameInput = objInput[1].toString();
         String payerIBANInput = objInput[2].toString();
-        String payeeNameInput = objInput[3].toString();
-        String payeeIBANInput = objInput[4].toString();
-        String currencyInput = objInput[5].toString();
-        String amountInput = objInput[6].toString();
-        String dateInput = objInput[7].toString();
-        String paymentDescriptionInput = objInput[8].toString();
+        //String payeeNameInput = objInput[3].toString();
+        String payeeIBANInput = objInput[3].toString();
+        String currencyInput = objInput[4].toString();
+        String amountInput = objInput[5].toString();
+        String dateInput = objInput[6].toString();
+        String paymentDescriptionInput = objInput[7].toString();
 
         String strBrojAutorizacije = null;
         String referenceID = null;
@@ -102,7 +102,7 @@ public class mobileFXPaymentCorporateTest extends BaseTest {
 
             ForeignPaymentPage foreignPaymentPage = new ForeignPaymentPage(driver);
             foreignPaymentPage.setPayerData(payerIBANInput);
-            foreignPaymentPage.setPayeeData(payeeIBANInput, payeeNameInput);
+            foreignPaymentPage.setPayeeData(payeeIBANInput);
             foreignPaymentPage.doSelectCurrency(currencyInput);
 
             foreignPaymentPage.doProceedAndVerifyInputs(testType);

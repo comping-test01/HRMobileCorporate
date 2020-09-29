@@ -1,8 +1,7 @@
 package com.ivs.pages;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.TouchAction;
+import io.appium.java_client.*;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.functions.ExpectedCondition;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
@@ -15,6 +14,7 @@ import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 import static io.appium.java_client.touch.offset.PointOption.point;
 
@@ -28,16 +28,6 @@ public class BasePage extends PageGenerator {
     //If we need we can use custom wait in BasePage and all page classes
     WebDriverWait wait = new WebDriverWait(this.driver,20);
     public SoftAssert softAssert = new SoftAssert();
-
-    //Click Method by using JAVA Generics (You can use both By or Webelement)
-    /*public <T> void click (T elementAttr) {
-        if(elementAttr.getClass().getName().contains("By")) {
-            driver.findElement((By) elementAttr).click();
-        } else {
-            ((MobileElement) elementAttr).click();
-        }
-    }
-    */
 
 
     //Write Text by using JAVA Generics (You can use both By or Webelement)
@@ -78,17 +68,6 @@ public class BasePage extends PageGenerator {
     }
 
 
-    public boolean isElementPresent(MobileElement element, int timeOutSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, timeOutSeconds);
-        try {
-            if (wait.until(ExpectedConditions.visibilityOf(element)) != null) {
-                return true;
-            }
-        } catch (Exception e) {
-            System.out.println("isElementPresent, element not found: " + element.toString());;
-        }
-        return false;
-    }
 
     public MobileElement fluentWaitforElement(By by, long timeoutSec, long pollingSec) {
 
@@ -166,20 +145,13 @@ public class BasePage extends PageGenerator {
                 .perform();
     }
 
-    public ExpectedCondition elementFoundAndClicked(By locator) {
-        return (ExpectedCondition<Object>) driver -> {
-            WebElement el = driver.findElement(locator);
-            el.click();
-            return true;
-        };
-    }
 
 
-    private ExpectedCondition elementFoundAndNotEmpty(By locator) {
+
+     ExpectedCondition elementFoundAndNotEmpty(By locator) {
         return (ExpectedCondition<Object>) driver -> {
             MobileElement el = driver.findElement(locator);
             return el.getText().length() != 0;
-
         };
     }
 
@@ -197,23 +169,7 @@ public class BasePage extends PageGenerator {
         new TouchAction(driver).press(pointOption1).waitAction(WaitOptions.waitOptions(Duration.ofMillis(475))).moveTo(pointOption2).release().perform();
     }
 
-    public static boolean waitForElement(WebDriver driver, WebElement element, int maxWait) {
-        boolean statusOfElementToBeReturned = false;
-        //long startTime = StopWatch.startTime();
-        WebDriverWait wait = new WebDriverWait(driver, maxWait);
-        try {
-            WebElement waitElement = wait.until(ExpectedConditions.visibilityOf(element));
-            if (waitElement.isDisplayed() && waitElement.isEnabled()) {
-                statusOfElementToBeReturned = true;
-                //Log.event("Element is displayed:: " + element.toString());
-            }
-        }
-        catch (Exception e) {
-            statusOfElementToBeReturned = false;
-            //Log.event("Unable to find a element after " + StopWatch.elapsedTime(startTime) + " sec ==> " + element.toString());
-        }
-        return statusOfElementToBeReturned;
-    }
+
 
     public static boolean waitForClickableElement(WebDriver driver, WebElement element, int maxWait) {
         boolean statusOfElementToBeReturned = false;
@@ -233,4 +189,45 @@ public class BasePage extends PageGenerator {
         return statusOfElementToBeReturned;
     }
 
+
+
+
+
+    public void swipeToBottom()
+    {
+        Dimension dim = driver.manage().window().getSize();
+        int height = dim.getHeight();
+        int width = dim.getWidth();
+        int x = width/2;
+        int top_y = (int)(height*0.80);
+        int bottom_y = (int)(height*0.20);
+        TouchAction ts = new TouchAction(driver);
+        ts.press(PointOption.point(x, top_y)).moveTo(PointOption.point(x, bottom_y)).release().perform();
+
+    }
+
+    public void swipeToTop()
+    {
+        Dimension dim = driver.manage().window().getSize();
+        int height = dim.getHeight();
+        int width = dim.getWidth();
+        int x = width/2;
+        int top_y = (int)(height*0.80);
+        int bottom_y = (int)(height*0.20);
+        TouchAction ts = new TouchAction(driver);
+        ts.press(PointOption.point(x, bottom_y)).moveTo(PointOption.point(x, top_y)).release().perform();
+
+    }
+
+    public void scrollIntoView(String text){
+         driver.findElement(MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"" + text + "\").instance(0))"));
+    }
 }
+
+
+
+
+
+
+
+

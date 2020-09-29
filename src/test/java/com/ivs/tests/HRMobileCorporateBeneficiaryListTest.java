@@ -5,7 +5,10 @@ import com.ivs.testrail.TestRailCase;
 import com.ivs.testrail.TestRailListener;
 import com.ivs.util.DataProviderSource;
 import com.ivs.util.ExcelUtil;
+import com.ivs.util.JSONDataProvider;
+import org.json.simple.JSONObject;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -18,28 +21,23 @@ import java.util.concurrent.TimeUnit;
 @Listeners(TestRailListener.class)
 public class HRMobileCorporateBeneficiaryListTest extends BaseTest {
 
-    int intColumns = 6;
-    String inputFileName;
-    Object[][] outputParams = new Object [1][intColumns];
-
     @TestRailCase(testRailId = 3240)
-    @Test (dataProvider = "testData", dataProviderClass= DataProviderSource.class)
-    public void beneficiaryListNewBeneficiaryTest(Object [] objInput) throws InterruptedException {
+    @Test(groups={"BeneficiaryList"}, dataProvider="fetchData_JSON", dataProviderClass= JSONDataProvider.class, enabled=true)
+    public void beneficiaryListNewBeneficiaryTest(String rowID, String description, JSONObject testData) throws InterruptedException {
 
-        SoftAssert soft = new SoftAssert();
+
         driver = pageGen.getDriver();
-        String companyName = objInput[0].toString();
-        String IBAN = objInput[1].toString();
-        String identifierName = objInput[2].toString();
-        String beneficiaryName = objInput[3].toString();
+        String legalEntityNameInput = testData.get("legalEntityNameInput").toString();
+        String identifierNameInput = testData.get("identifierNameInput").toString();
+        String beneficiaryIBANInput = testData.get("beneficiaryIBANInput").toString();
+        String beneficiaryNameInput = testData.get("beneficiaryNameInput").toString();
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         LoginPage loginPage = new LoginPage(driver);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
-
-
+        
         try {
             loginPage.loginAndEnterPIN(applicationPIN,language);
             ClientSelectPage clientSelectPage = new ClientSelectPage(driver);
@@ -52,45 +50,26 @@ public class HRMobileCorporateBeneficiaryListTest extends BaseTest {
 
             //DEBUG pinNumber exists for deletion purposes, to be removed
             String pinNumber = "789987";
-            beneficiaryListPage.deleteAddedBeneficiary(beneficiaryName,pinNumber, wait);
-            identifierName = beneficiaryListPage.addBeneficiary(IBAN, beneficiaryName, wait);
+            //beneficiaryListPage.deleteAddedBeneficiary(beneficiaryNameInput,pinNumber, wait);
+            identifierNameInput = beneficiaryListPage.addBeneficiary(beneficiaryIBANInput, beneficiaryNameInput, wait);
             homePage.doSelectPaymentAndPaySomeone();
             PaySomeonePage paySomeonePage = new PaySomeonePage(driver);
-            paySomeonePage.checkBeneficiary(beneficiaryName, IBAN, identifierName, wait);
-            outputParams[0][4] = "OK";
-            outputParams[0][5] = "";
-
-            soft.assertTrue(true);
-            soft.assertAll();
-
+            paySomeonePage.checkBeneficiary(beneficiaryNameInput, beneficiaryIBANInput, identifierNameInput, wait);
 
         } catch (Exception e) {
-
-            outputParams[0][4] = "NOK";
-            outputParams[0][5] = e.toString();
             e.printStackTrace();
-
-            HomePage homePage = new HomePage(driver);
-            homePage.doLogOut();
-
-            soft.assertTrue(false);
-            soft.assertAll();
+            Assert.fail("Exception in test:" + e.getMessage());
         }
-
 
     }
 
 
     @AfterMethod
-    public void saveOutput (Method method) throws InterruptedException {
+    public void logOut(Method method) throws InterruptedException {
 
         HomePage homePage = new HomePage(driver);
         homePage.doLogOut();
 
-        String testName = method.getName();
-        inputFileName = "HRMobileCorporate" + testName.substring(0, 1).toUpperCase() + testName.substring(1)+ "InputParameters.xlsx";
-        ExcelUtil objData = new ExcelUtil();
-        objData.SaveParameters(inputFileName, "Input1", outputParams,intColumns,2, platform);
     }
 
 }

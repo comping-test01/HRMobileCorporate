@@ -1,6 +1,9 @@
 package com.ivs.tests;
 
 
+import com.ivs.pages.ClientSelectPage;
+import com.ivs.pages.HomePage;
+import com.ivs.pages.LoginPage;
 import com.ivs.pages.PageGenerator;
 import com.ivs.util.DriverManagerFactory;
 import com.ivs.util.ExcelUtil;
@@ -9,10 +12,21 @@ import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
+import org.json.simple.JSONObject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.*;
+import com.ivs.util.JSONDataProvider;
+import com.ivs.util.PropertiesFile;
+
+import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static io.appium.java_client.touch.offset.PointOption.point;
 
@@ -22,32 +36,35 @@ public class BaseTest
 
     PageGenerator pageGen;
 
-    Object[][] arrInputParams;
-
     String applicationPIN;
     String remoteServerAddress;
     String localServerAddress;
     String serverAddress;
+    String environment;
     DriverManagerFactory.DriverType driverType;
     String language;
     String platform;
+    String testRailEnabled;
+    String dataFile;
 
-
+    String expectedText;
+    ResourceBundle resourceBundle;
 
     protected AppiumDriver<MobileElement> driver = null;
 
     @BeforeClass
-    @Parameters({"platform","language"})
-    public void setupApplication(@Optional("Android") String platform, @Optional("hr") String language, ITestContext context) throws Exception {
+    @Parameters({"platform","language", "testRailEnabled"})
+    public void setupApplication(@Optional("Android") String platform, @Optional("hr") String language, @Optional("true") String testRailEnabled, ITestContext context) throws Exception {
 
-        ExcelUtil objData = new ExcelUtil();
-        arrInputParams = objData.GetLoginValues("login.xlsx","Input1");
-        applicationPIN = arrInputParams[0][0].toString();
-        localServerAddress = arrInputParams[0][1].toString();
-        remoteServerAddress = arrInputParams[0][2].toString();
+        PropertiesFile properties = new PropertiesFile();
 
-        serverAddress = (remoteServerAddress.length()==0) ? localServerAddress : remoteServerAddress;
-            serverAddress = localServerAddress;
+        applicationPIN = properties.getapplicationPIN();
+        localServerAddress = properties.getLocalServerAddress();
+        remoteServerAddress = properties.getRemoteServerAddress();
+        environment = properties.getEnvironment();
+
+
+        serverAddress = (environment.equals("local")) ? localServerAddress : remoteServerAddress;
 
         DriverManagerFactory.DriverType localDriverType;
 
@@ -69,57 +86,80 @@ public class BaseTest
 
         this.language = language;
         this.platform = platform;
+        this.testRailEnabled = testRailEnabled;
         context.setAttribute("language",language);
+        context.setAttribute("platform",platform);
         context.setAttribute("platform",platform);
 
     }
+
+    String setSingleParameter(String parameterName, JSONObject testData) {
+        String s;
+        try {
+            s = testData.get(parameterName).toString();
+        } catch(Exception e) {
+            s = null;
+        }
+
+        return s;
+
+    }
+
+    void setResources() {
+        Locale.setDefault(new Locale(this.language, this.language.toUpperCase()));
+        resourceBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+    }
+
+    void loginToApplication(int waitTime) throws InterruptedException {
+        driver.manage().timeouts().implicitlyWait(waitTime, TimeUnit.SECONDS);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.loginAndEnterPIN(applicationPIN,language);
+    }
+
+    HomePage setUpHomePage() {
+        HomePage homePage = pageGen.GetInstance(HomePage.class);
+        expectedText = resourceBundle.getString("WelcomeMessage");
+        Assert.assertTrue(homePage.getWelcomeText().toUpperCase().contains(expectedText));
+        return homePage;
+    }
+
+    void setUpCompany(HomePage homePage, String legalEntityNameInput) throws Exception {
+        homePage.doChangeCompany(legalEntityNameInput);
+        ClientSelectPage clientSelectPage = pageGen.GetInstance(ClientSelectPage.class);
+        clientSelectPage.doSearchAndSelectClient(legalEntityNameInput);
+    }
+
+    void switchToWebView() {
+        Set<String> availableContexts = driver.getContextHandles();
+        for (String contextName : availableContexts) {
+            //System.out.println(contextName);
+        }
+        availableContexts.stream()
+                .filter(context -> context.toLowerCase().contains("webview"))
+                .forEach(newcontext -> driver.context(newcontext));
+    }
+
+
     @BeforeMethod
     public void methodLevelSetup () {
         pageGen = new PageGenerator(driver);
     }
 
-    @AfterSuite
-    public void globalTearDown () {
-        //service.stop();
+    @AfterMethod
+    public void logOut(Method method) throws InterruptedException {
+        HomePage homePage = new HomePage(driver);
+       homePage.doLogOut();
     }
 
 
-
-
-/*
-    @AfterMethod
-    public void logOut() {
-        HomePage homePage =new HomePage(driver);
-        try {
-            homePage.doLogOut();
-        } catch (InterruptedException e) {
-            System.out.println("***** logOut *****");
-            e.printStackTrace();
-        }*/
-
-
-//        if (Utils.isElementPresent(By.xpath("//*[@text='ios-ic-closex']"),driver)){
-//            ////*[@text='ios-ic-closex']
-//            driver.findElement(By.xpath("//*[@text='ios-ic-closex']")).click();
-//        }
-//
-//
-//        driver.findElement(By.xpath("//*[@text='Ionic App']")).click();
-//        driver.findElement(By.xpath("//*[@text='ic menu']")).click();
-//
-//
-//        if (Utils.isElementPresent(By.xpath("//*[@text='ic logout']"),driver)){
-//            ////*[@text='ios-ic-closex']
-//            driver.findElement(By.xpath("//*[@text='ic logout']")).click();
-//        }
-
-
-    //}
-
     @AfterClass
-    public void closeApplication()
-    {
-        driver.closeApp();
+    public void closeApplication() {
+      //  driver.closeApp();
+       // driver.quit();
+    }
+
+    @AfterSuite
+    public void closeOut() {
         driver.quit();
     }
 
